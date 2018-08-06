@@ -407,6 +407,7 @@ td[contentEditable]{
 	-ms-transform: scale3d(0, 0, 0);
 	-o-transform: scale3d(0, 0, 0);
 	transform: scale3d(0, 0, 0);
+	z-index: 10;
 }
 
 #end-message.show{
@@ -504,9 +505,8 @@ td[contentEditable]{
 
 .final-score.show{
 	width: 90px;
-	padding: 10px;
-	padding-bottom: 8px;
-	margin-right: 10px;
+	padding: 5px 10px;
+	margin-right: 5px;
 }
 
 .player-score{
