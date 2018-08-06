@@ -31,9 +31,13 @@ define(function(){
         showButton: function(text){
             button.innerHTML = text;
             button.classList.add('show');
+            button.disabled = false;
+            button.style.zIndex = 10;
         },
         hideButton: function(text){
             button.classList.remove('show');
+            button.disabled = true;
+            button.style.zIndex = 1;
         },
         arrowClickOnce: function(cb){
             $(arrow).on("click", function(){
