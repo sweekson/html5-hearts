@@ -5,9 +5,9 @@ CACHE MANIFEST
 CACHE:
 img/club.png
 img/diamond.png
-img/flip.png
 img/heart.png
 img/spade.png
+img/flip.png
 js/Ai.js
 js/AsyncBrain.js
 js/Brain.js

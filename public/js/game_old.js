@@ -417,7 +417,7 @@
         status = 'prepare';
         proceed();
     };
-    
+
     var newGame = game.newGame = function(){
         players.forEach(function(p){
             p.oldScore = 0;
@@ -426,7 +426,7 @@
         status = 'prepare';
         proceed();
     };
-    
+
     game.load = function(){
         // game.state.apply();
         // players.forEach(function(p){
