@@ -1,0 +1,22 @@
+{
+  "name": "html5-hearts",
+  "version": "1.1.0",
+  "description": "Hearts card game with HTML5",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sweekson/html5-hearts.git"
+  },
+  "keywords": [],
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/sweekson/html5-hearts/issues"
+  },
+  "homepage": "https://github.com/sweekson/html5-hearts#readme",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
