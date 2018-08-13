@@ -18,8 +18,15 @@ define(function(){
     }
   })();
 
+  function search(regexp, index = 0) {
+    const matches = location.search.match(regexp);
+    if (!matches) { return null; }
+    return matches[index];
+  }
+
   return {
     $: $,
-    vendorPrefix: vendorPrefix
+    vendorPrefix: vendorPrefix,
+    search
   };
 });
