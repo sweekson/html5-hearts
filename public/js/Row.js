@@ -1,5 +1,5 @@
-define(["layout", "util"],
-function(layout, util){
+define(["layout", "options"],
+function(layout, options){
     "use strict";
 
     var Row = function(id, player){
@@ -43,7 +43,7 @@ function(layout, util){
             x: this.left + ind * layout.cardSep,
             y: this.distance,
             rotation: this.rotation,
-            rotateY: this.flipped ? util.search(/cheat=(yes)/, 1) === 'yes' ? 0 : 180 : 0,
+            rotateY: this.flipped ? options.cheat() ? 0 : 180 : 0,
             z: ind
         };
         if(this.curShifted.indexOf(this.cards[ind]) > -1){
