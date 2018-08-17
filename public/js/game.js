@@ -1,5 +1,5 @@
-define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "PomDPBrain", "options"],
-function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   PomDPBrain,   options){
+define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "PomDPBrain", "options", "events"],
+function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   PomDPBrain,   options,   events){
     "use strict";
 
     var rounds = 0;
@@ -66,9 +66,11 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         });
     };
 
-    var adds = [1, 3, 2];
-    var getPlayerForTransfer = function(id){
-        return (id + adds[rounds % 3]) % 4;
+    var getPlayerForTransferTo = function(id){
+        return (id + [2, 1, 3][rounds % 3]) % 4;
+    };
+    var getPlayerForTransferFrom = function(id){
+        return (id + [2, 3, 1][rounds % 3]) % 4;
     };
 
     return {
@@ -129,6 +131,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         proceed: function(){
             ({
                 'prepare': function(){
+                    events.trigger('prepare', { players });
                     ui.hideMessage();
                     ui.hideButton();
                     players.forEach(function(p){
@@ -150,13 +153,24 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                 },
                 'start': function(){
                     rounds++;
+                    events.trigger('start', { rounds, players });
                     $.when.apply($, players.map(function(p){
                         return p.prepareTransfer(rounds % 3);
                     })).done(this.next.bind(this));
                 },
                 'passing': function(){
+                    events.trigger('passing', {
+                        transfer: players.map((v, i) => {
+                            const id = v.getName();
+                            const toPlayer = players[getPlayerForTransferTo(i)];
+                            const pass = { to: toPlayer.getName(), cards: v.selected };
+                            const fromPlayer = players[getPlayerForTransferFrom(i)];
+                            const receive = { from: fromPlayer.getName(), cards: fromPlayer.selected };
+                            return { id, pass, receive };
+                        })
+                    });
                     for(var i = 0; i < 4; i++){
-                        players[i].transferTo(players[getPlayerForTransfer(i)]);
+                        players[i].transferTo(players[getPlayerForTransferTo(i)]);
                     }
                     this.next();
                 },
@@ -231,6 +245,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         ui.showWin(players[0] === rank[0]);
                         ui.showButton("Restart");
                         ui.buttonClickOnce(this.newGame.bind(this));
+                        events.trigger('over', { players });
                     } else {
                         ui.showButton("Continue");
                         ui.buttonClickOnce(this.next.bind(this));
