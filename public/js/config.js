@@ -1,8 +1,8 @@
-define(function(){
+define(["options"], function(options){
     "use strict";
 
     var names = ["Chakravartin", "Octavian", "Antony", "Lepidus"],
-        levels = [-1, 1, 2, 3];
+        levels = options.brains() || [-1, 1, 2, 3];
 
     try{
         var loadedNames = JSON.parse(localStorage.getItem("names"));
