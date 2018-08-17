@@ -1,0 +1,59 @@
+{
+  "table": 1,
+  "winners": ["P1"],
+  "players": [
+    {
+      "id": "P1",
+      "name": "",
+      "position": 0,
+      "socre": 0
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "hands": [
+        {
+          "id": "P1",
+          "score": 0,
+          "cards": ["", "", "", "", "", "", "", "", "", "", "", "", ""],
+          "pass": {
+            "to": "",
+            "cards": ["", "", ""]
+          },
+          "receive": {
+            "from": "",
+            "cards": ["", "", ""]
+          }
+        },
+        { "id": "P2", "score": 25 },
+        { "id": "P3", "score": 1 },
+        { "id": "P4", "score": 0 }
+      ],
+      "tircks": [
+        {
+          "lead": "P2",
+          "won": "P3",
+          "score": 0,
+          "cards": [
+            { "player": "P2", "card": "2C" },
+            { "player": "P3", "card": "TC" },
+            { "player": "P4", "card": "5C" },
+            { "player": "P1", "card": "6C" }
+          ]
+        },
+        {
+          "lead": "P3",
+          "won": "P3",
+          "score": 1,
+          "cards": [
+            { "player": "P3", "card": "" },
+            { "player": "P4", "card": "" },
+            { "player": "P1", "card": "" },
+            { "player": "P2", "card": "" }
+          ]
+        }
+      ]
+    }
+  ]
+}
