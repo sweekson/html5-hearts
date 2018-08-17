@@ -1,5 +1,5 @@
-define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "PomDPBrain"],
-function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   PomDPBrain){
+define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "PomDPBrain", "options"],
+function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   PomDPBrain,   options){
     "use strict";
 
     var rounds = 0;
@@ -136,7 +136,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     });
                     board.init();
                     heartBroken = false;
-                    board.shuffleDeck();
+                    (rounds === 0 || options.replay() < rounds) && board.shuffleDeck();
                     initBrains().done(this.next.bind(this));
                 },
                 'distribute': function(){
