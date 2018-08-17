@@ -19,6 +19,10 @@ function(Row ,  Waste,   domBinding){
         this.display.setName(name);
     };
 
+    Player.prototype.getName = function(){
+        return this.display.nametext.textContent;
+    };
+
     Player.prototype.adjustPos = function(){
         this.row.adjustPos();
         this.waste.adjustPos();
