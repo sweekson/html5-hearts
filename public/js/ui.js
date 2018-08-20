@@ -64,14 +64,9 @@ define(function(){
         },
         showPassingScreen: function(dir){
             var directions = ['left', 'right', 'opposite'];
-            this.showMessage("Pass three cards to the " + directions[dir]);
-            [function(){
-                $(arrow).css("transform", 'rotate(0)');
-            },function(){
-                $(arrow).css("transform", 'rotate(180deg)');
-            },function(){
-                $(arrow).css("transform", 'rotate(90deg)');
-            }][dir]();
+            var rotates = ['rotate(0)', 'rotate(180deg)', 'rotate(90deg)'];
+            this.showMessage("Pass three cards to the " + directions[dir - 1]);
+            $(arrow).css("transform", rotates[dir - 1]);
         },
         hideMessage: function(){
             message.style.display = '';

@@ -160,7 +160,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     if (!shouldPassCards()) { return this.next(); }
 
                     $.when.apply($, players.map(function(p){
-                        return p.prepareTransfer(rounds % 3);
+                        return p.prepareTransfer(rounds % 4);
                     })).done(this.next.bind(this));
                 },
                 'passing': function(){
