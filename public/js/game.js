@@ -72,6 +72,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
     var getPlayerForTransferFrom = function(id){
         return (id + [2, 3, 1][rounds % 3]) % 4;
     };
+    var shouldPassCards = _ => rounds % 4 !== 0;
 
     return {
         adjustLayout: function(){
@@ -90,11 +91,11 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
             });
             rounds = 0;
             ui.clearEvents();
+            events.trigger('game-start', { players });
             status = 'prepare';
             this.proceed();
         },
         next: function(){
-            console.log(status, "next");
             if (status == 'confirming'){
                 currentPlay = board.cards[26].parent.playedBy.id;
                 played = 0;
@@ -131,7 +132,6 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         proceed: function(){
             ({
                 'prepare': function(){
-                    events.trigger('prepare', { players });
                     ui.hideMessage();
                     ui.hideButton();
                     players.forEach(function(p){
@@ -141,6 +141,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     heartBroken = false;
                     (rounds === 0 || options.replay() < rounds) && board.shuffleDeck();
                     initBrains().done(this.next.bind(this));
+                    events.trigger('round-prepare', { players });
                 },
                 'distribute': function(){
                     var self = this;
@@ -148,24 +149,32 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         players.forEach(function(p){
                             p.row.sort();
                         });
+                        events.trigger('round-distribute', { players });
                         self.next();
                     });
                 },
                 'start': function(){
                     rounds++;
-                    events.trigger('start', { rounds, players });
+                    events.trigger('round-start', { rounds, players });
+
+                    if (!shouldPassCards()) { return this.next(); }
+
                     $.when.apply($, players.map(function(p){
                         return p.prepareTransfer(rounds % 3);
                     })).done(this.next.bind(this));
                 },
                 'passing': function(){
-                    events.trigger('passing', {
+                    if (!shouldPassCards()) { return this.next(); }
+
+                    events.trigger('round-passing', {
+                        rounds,
+                        players,
                         transfer: players.map((v, i) => {
-                            const id = v.getName();
+                            const id = v.id;
                             const toPlayer = players[getPlayerForTransferTo(i)];
-                            const pass = { to: toPlayer.getName(), cards: v.selected };
+                            const pass = { to: toPlayer.id, cards: v.selected };
                             const fromPlayer = players[getPlayerForTransferFrom(i)];
-                            const receive = { from: fromPlayer.getName(), cards: fromPlayer.selected };
+                            const receive = { from: fromPlayer.id, cards: fromPlayer.selected };
                             return { id, pass, receive };
                         })
                     });
@@ -178,6 +187,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     players.forEach(function(r){
                         r.row.sort();
                     });
+                    events.trigger('round-confirming', { rounds, players });
                     $.when.apply($, players.map(function(p){
                         return p.confirmTransfer();
                     })).done(this.next.bind(this));
@@ -194,6 +204,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                             return p.getScore();
                         })), waitDefer(200))
                     .done(function(card){
+                        events.trigger('trick-playing', { rounds, player: players[currentPlay], card, played });
                         players[currentPlay].setActive(false);
                         card.parent.out(card);
                         board.desk.addCard(card, players[currentPlay]);
@@ -206,6 +217,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     var info = board.desk.score();
                     currentPlay = info[0].id;
                     info[0].waste.addCards(info[1]);
+                    events.trigger('trick-end', { rounds, players, won: { player: info[0], cards: info[1] }, heartBroken });
                     this.next();
                 },
                 'end': function(){
@@ -235,6 +247,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     players.forEach(function(p){
                         p.adjustPos();
                     });
+                    events.trigger('round-end', { rounds, players });
                     if(players.some(function(p){
                         return p._oldScore >= 100;
                     })){
@@ -245,7 +258,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         ui.showWin(players[0] === rank[0]);
                         ui.showButton("Restart");
                         ui.buttonClickOnce(this.newGame.bind(this));
-                        events.trigger('over', { players });
+                        events.trigger('game-over', { players: rank });
                     } else {
                         ui.showButton("Continue");
                         ui.buttonClickOnce(this.next.bind(this));
