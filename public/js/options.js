@@ -10,5 +10,8 @@ define(["util"], function(util){
     replay () {
       return util.search(/replay=(\d+)/, 1) || -1;
     },
+    passing () {
+      return util.search(/passing=(no)/, 1) !== 'no';
+    },
   };
 });
