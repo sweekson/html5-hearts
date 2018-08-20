@@ -157,14 +157,14 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     rounds++;
                     events.trigger('round-start', { rounds, players });
 
-                    if (!shouldPassCards()) { return this.next(); }
+                    if (!shouldPassCards() || !options.passing()) { return this.next(); }
 
                     $.when.apply($, players.map(function(p){
                         return p.prepareTransfer(rounds % 4);
                     })).done(this.next.bind(this));
                 },
                 'passing': function(){
-                    if (!shouldPassCards()) { return this.next(); }
+                    if (!shouldPassCards() || !options.passing()) { return this.next(); }
 
                     events.trigger('round-passing', {
                         rounds,
