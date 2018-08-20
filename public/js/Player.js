@@ -84,6 +84,10 @@ function(Row ,  Waste,   domBinding){
         return this._score;
     };
 
+    Player.prototype.getAccumulatedScore = function(){
+        return this._oldScore;
+    };
+
     Player.prototype.setActive = function(yes){
         this.display.setHighlight(yes);
     };
