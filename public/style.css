@@ -246,6 +246,7 @@ td[contentEditable]{
 	background-attachment:fixed;
 	overflow: hidden;
 	z-index: 5;
+	user-select: none !important;
 }
 
 #pass-arrow{
@@ -456,6 +457,7 @@ td[contentEditable]{
 .info-board.board-1{
 	left: 20%;
 	top: 50%;
+	transform: rotateZ(90deg);
 }
 
 .info-board.board-2{
@@ -466,6 +468,7 @@ td[contentEditable]{
 .info-board.board-3{
 	left: 80%;
 	top: 50%;
+	transform: rotateZ(-90deg);
 }
 
 .info-board:not(.table):hover{
