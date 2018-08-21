@@ -122,11 +122,15 @@ define(["events", "options"], function(events, options){
     selected.game.rounds.forEach((v, i) => ui.$rounds.append(renderRoundItem(i + 1, v)));
   }
 
-  function renderNumbers (numbers) {
-    return numbers.map(v => $('<span class="card-number">').text(v));
+  function renderNumbers (suit, numbers, played) {
+    return numbers.map(v => {
+      const $card = $('<span class="card-number">').text(v);
+      played.indexOf(`${v}${suit}`) > -1 && $card.addClass('card-played');
+      return $card;
+    });
   }
 
-  function renderHands (hands) {
+  function renderHands (hands, tricks) {
     const $table = $('<table class="table-logs">');
     const $head = $('<tr>');
     const $spades = $('<tr>');
@@ -134,6 +138,9 @@ define(["events", "options"], function(events, options){
     const $diamonds = $('<tr>');
     const $clubs = $('<tr>');
     const cards = { spades: [], hhearts: [], diamonds: [], clubs: []};
+    const played = [];
+
+    tricks && tricks.forEach(v => played.push(...v.cards.map(v => v.card)));
 
     $head.append('<th>');
     $spades.append('<td>S</td>');
@@ -158,10 +165,10 @@ define(["events", "options"], function(events, options){
         suit === 'D' && cards.diamonds.push(number);
         suit === 'C' && cards.clubs.push(number);
       });
-      $spades.append($('<td>').append(renderNumbers(cards.spades)));
-      $hearts.append($('<td>').append(renderNumbers(cards.hearts)));
-      $diamonds.append($('<td>').append(renderNumbers(cards.diamonds)));
-      $clubs.append($('<td>').append(renderNumbers(cards.clubs)));
+      $spades.append($('<td>').append(renderNumbers('S', cards.spades, played)));
+      $hearts.append($('<td>').append(renderNumbers('H', cards.hearts, played)));
+      $diamonds.append($('<td>').append(renderNumbers('D', cards.diamonds, played)));
+      $clubs.append($('<td>').append(renderNumbers('C', cards.clubs, played)));
     });
 
     ui.$hands.empty().append($table);
@@ -189,6 +196,8 @@ define(["events", "options"], function(events, options){
       selected.$trick !== $row && $row.addClass('selected');
       selected.$trick = null;
       $row.hasClass('selected') && (selected.$trick = $row);
+      selected.$trick && renderHands(selected.round.hands, selected.round.tricks.slice(0, index));
+      !selected.$trick && renderHands(selected.round.hands);
     });
     ui.$tricks.append($row);
   }

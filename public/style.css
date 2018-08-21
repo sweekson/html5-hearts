@@ -540,6 +540,10 @@ td[contentEditable]{
 	margin-right: 4px;
 }
 
+.card-played {
+	color: #444;
+}
+
 .trick-lead > .trick-card {
 	color: #ff9800;
 }
