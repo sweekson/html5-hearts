@@ -9,7 +9,7 @@ define(["events", "options"], function(events, options){
     $tricks: $('<tbody>'),
     $score: $('<tfoot>'),
   };
-  const selected = { game: null, $game: null, round: null, $round: null };
+  const selected = { game: null, $game: null, round: null, $round: null, $trick: null };
 
   function Game (table) {
     this.table = table || 0;
@@ -77,7 +77,7 @@ define(["events", "options"], function(events, options){
       $('<div>').append(
         $('<div class="logs-title">').text('Detail'),
         ui.$hands,
-        $('<div>').append($('<table class="table-logs">').append(ui.$tricks, ui.$score)),
+        $('<div>').append($('<table class="table-logs table-selectable">').append(ui.$tricks, ui.$score)),
       ),
     );
   }
@@ -184,6 +184,12 @@ define(["events", "options"], function(events, options){
     trick.isHeartBroken && $('<tr>').addClass('heart-broken');
     trick.cards.forEach(v => played.set(v.player, v.card));
     round.hands.forEach(v => $row.append(renderPlayedCard(v, played.get(v.id), trick)));
+    $row.click(e => {
+      selected.$trick && selected.$trick.removeClass('selected');
+      selected.$trick !== $row && $row.addClass('selected');
+      selected.$trick = null;
+      $row.hasClass('selected') && (selected.$trick = $row);
+    });
     ui.$tricks.append($row);
   }
 

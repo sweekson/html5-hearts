@@ -526,9 +526,13 @@ td[contentEditable]{
 	color: #999;
 }
 
-.table-logs > thead > tr > th:nth-child(even),
-.table-logs > tbody > tr > td:nth-child(even) {
+.table-logs > tbody > tr:hover > td,
+.table-selectable > tbody > tr.selected > td {
 	background: rgba(255, 255, 255, .1);
+}
+
+.table-selectable > tbody > tr > td {
+	cursor: pointer;
 }
 
 .card-number {
@@ -537,7 +541,7 @@ td[contentEditable]{
 }
 
 .trick-lead > .trick-card {
-	text-decoration: underline;
+	color: #ff9800;
 }
 
 .trick-won > span {
