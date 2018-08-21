@@ -10,6 +10,7 @@ function(layout, options){
         this.curShifted = [];
         this.flipped = true;
         this.playedBy = player;
+        this.maxShift = 1;
     };
 
     Row.prototype.addCard = function(card){
