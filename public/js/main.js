@@ -4,11 +4,11 @@ require({
         jquery: 'lib/jquery-2.0.3.min'
     }
 },
-        ["game", "jquery", "domBinding", "layout", "config", "logger"],
-function(game,    $,        domBinding,   layout,   config, logger){
+        ["game", "jquery", "domBinding", "layout", "config", "logger", "options"],
+function(game,    $,        domBinding,   layout,   config,   logger,   options){
     "use strict";
 
-    logger.init();
+    logger.init($('#game-logs').addClass(options.logs() ? 'in' : ''));
 
     layout.region = $('#game-region')[0];
     layout.adjust();
