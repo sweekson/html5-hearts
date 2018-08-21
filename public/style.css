@@ -425,6 +425,126 @@ td[contentEditable]{
 	transition: transform 1s;
 }
 
+#game-logs {
+	background: #111;
+	border-right: 1px solid #333;
+	color: #fff;
+	display: none;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	box-sizing: border-box;
+	padding: 15px;
+	overflow: auto;
+	transition: width .5s ease-in;
+	z-index: 99;
+}
+
+#game-logs.in {
+	display: block;
+	width: 680px;
+}
+
+#game-logs.in ~ #game-region {
+	left: 680px;
+}
+
+#game-logs.in ~ #main-button-group {
+	left: 690px;
+}
+
+#game-logs.in ~ #play-button,
+#game-logs.in ~ #game-message {
+	left: calc(50vw + 340px);
+}
+
+.logs-row {
+	margin-bottom: 15px;
+}
+
+.logs-title {
+	font-size: 16px;
+	margin-bottom: 8px;
+}
+
+.logs-list {
+	padding: 10px 0;
+}
+
+.logs-item {
+	background: #444;
+	border-radius: 50em;
+	box-sizing: border-box;
+	cursor: pointer;
+	display: inline-block;
+	line-height: 20px;
+	margin-right: 8px;
+	margin-bottom: 8px;
+	padding: 5px;
+	width: 30px;
+	height: 30px;
+	text-align: center;
+}
+
+.logs-item.selected {
+	background: #699;
+}
+
+.table-logs {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+	table-layout: fixed;
+	margin-bottom: 8px;
+}
+
+.table-logs > thead > tr > th,
+.table-logs > tbody > tr > td,
+.table-logs > tfoot > tr > td {
+	padding: 8px;
+}
+
+.table-logs > tbody > tr > td {
+	border-top: 1px solid rgba(255, 255, 255, .1);
+}
+
+.table-logs > tbody > tr:last-child > td {
+	border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.table-logs > thead > tr > th:first-child,
+.table-logs > tbody > tr > td:first-child {
+	width: 16px;
+}
+
+.table-logs > thead > tr > th:nth-child(n+2) {
+	width: 25%;
+}
+
+.table-logs > tbody > tr > td:first-child {
+	color: #999;
+}
+
+.table-logs > thead > tr > th:nth-child(even),
+.table-logs > tbody > tr > td:nth-child(even) {
+	background: rgba(255, 255, 255, .1);
+}
+
+.card-number {
+	display: inline-block;
+	margin-right: 4px;
+}
+
+.trick-lead > .trick-card {
+	text-decoration: underline;
+}
+
+.trick-won > span {
+	display: inline-block;
+	margin-right: 4px;
+}
+
 .info-board{
 	position: absolute;
 	z-index: 200;
