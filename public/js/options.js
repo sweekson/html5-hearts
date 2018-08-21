@@ -13,5 +13,8 @@ define(["util"], function(util){
     passing () {
       return util.search(/passing=(no)/, 1) !== 'no';
     },
+    logs () {
+      return util.search(/logs=(on)/, 1) === 'on';
+    },
   };
 });
