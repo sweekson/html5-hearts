@@ -46,5 +46,10 @@ function(game,    $,        domBinding,   layout,   config,   logger,   options)
         });
         $('#control-region')[0].hidden = false;
     });
+    $('#logs-btn').on("click", function(){
+        $('#game-logs').toggleClass('in');
+        layout.adjust();
+        game.adjustLayout();
+    });
     game.newGame();
 });
