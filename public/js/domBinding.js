@@ -18,9 +18,12 @@ define(function(){
         if(!pos.rotateY){
             pos.rotateY = 0;
         }
+        if(!pos.rotateZ){
+            pos.rotateZ = 0;
+        }
         this.dom.css({
             zIndex: 10 + pos.z,
-            transform: 'rotate(' + pos.rotation + 'deg) translate3d(' + pos.x + 'px, ' + pos.y + 'px, ' + pos.z + 'px) rotateY(' + pos.rotateY + 'deg)'
+            transform: 'rotate(' + pos.rotation + 'deg) translate3d(' + pos.x + 'px, ' + pos.y + 'px, ' + pos.z + 'px) rotateY(' + pos.rotateY + 'deg) rotateZ(' + pos.rotateZ + 'deg)'
         });
     };
 

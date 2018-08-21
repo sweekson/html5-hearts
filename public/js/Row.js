@@ -41,10 +41,11 @@ function(layout, options){
 
     Row.prototype.getPosFor = function(ind){
         var pos = {
-            x: this.left + ind * layout.cardSep,
+            x: this.rotation === 180 ? Math.abs(this.left + ind * layout.cardSep - 180) - 180 : this.left + ind * layout.cardSep,
             y: this.distance,
             rotation: this.rotation,
             rotateY: this.flipped ? options.cheat() ? 0 : 180 : 0,
+            rotateZ: this.rotation === 180 ? 180 : 0,
             z: ind
         };
         if(this.curShifted.indexOf(this.cards[ind]) > -1){
