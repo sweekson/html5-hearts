@@ -119,6 +119,7 @@ define(["events"], function(events){
 
       events.on('round-end', e => {
         const scores = new Map();
+        const players = e.detail.players;
         players.forEach(v => scores.set(v.id, v.getScore()));
         current.round.hands.forEach(v => v.score = scores.get(v.id));
         players.forEach(v => scores.set(v.id, v.getAccumulatedScore() + v.getScore()));
