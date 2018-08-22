@@ -315,5 +315,8 @@ define(["events", "options"], function(events, options){
         console.log(e, current);
       });
     },
+    get current () { return current; },
+    get previous () { return previous; },
+    get games () { return games; },
   };
 });
