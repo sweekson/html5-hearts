@@ -514,6 +514,10 @@ td[contentEditable]{
 	border-bottom: 1px solid rgba(255, 255, 255, .1);
 }
 
+.table-logs > tbody > tr.heart-broken > td {
+	border-top: 1px solid #a22;
+}
+
 .table-logs > thead > tr > th:first-child,
 .table-logs > tbody > tr > td:first-child {
 	width: 16px;
