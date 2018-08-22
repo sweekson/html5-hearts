@@ -10,6 +10,20 @@ define(["events", "options"], function(events, options){
     $score: $('<tfoot>'),
   };
   const selected = { game: null, $game: null, round: null, $round: null, $trick: null };
+  const suits = {
+    classname: {
+      H: 'hearts',
+      D: 'diamonds',
+      S: 'spades',
+      C: 'clubs',
+    },
+    entities: {
+      H: '&hearts;',
+      D: '&diams;',
+      S: '&spades;',
+      C: '&clubs;',
+    }
+  };
 
   function Game (table) {
     this.table = table || 0;
@@ -141,7 +155,22 @@ define(["events", "options"], function(events, options){
     selected.game.rounds.forEach((v, i) => ui.$rounds.append(renderRoundItem(i + 1, v)));
   }
 
+  function renderCard (suit, number) {
+    const $card = $('<span class="poker-card poker-card-xs">').addClass(suits.classname[suit]);
+    return $card.append(
+      $('<span class="poker-card-number">').text(number),
+      $('<span class="poker-card-suit">').html(suits.entities[suit]),
+    );
+  }
+
   function renderNumbers (suit, numbers, played) {
+    if (options.visualize()) {
+      return numbers.map(v => {
+        const $card = renderCard(suit, v);
+        played.indexOf(`${v}${suit}`) > -1 && $card.addClass('card-played');
+        return $card;
+      });
+    }
     return numbers.map(v => {
       const $card = $('<span class="card-number">').text(v);
       played.indexOf(`${v}${suit}`) > -1 && $card.addClass('card-played');
@@ -195,7 +224,7 @@ define(["events", "options"], function(events, options){
 
   function renderPlayedCard (player, card, trick) {
     const $cell = $('<td>');
-    const $card = $('<span class="trick-card">').text(card);
+    const $card = options.visualize() ? renderCard(card[1], card[0]) : $('<span class="trick-card">').text(card);
     const $score = $('<span class="trick-score">').text(`(+${trick.score})`);
     $cell.append($card);
     player.id === trick.lead && $cell.addClass('trick-lead');
