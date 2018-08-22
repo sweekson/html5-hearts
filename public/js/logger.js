@@ -33,11 +33,28 @@ define(["events", "options"], function(events, options){
     this.played = [];
   }
 
+  function Voids () {
+    this.spades = false;
+    this.hearts = false;
+    this.diamonds = false;
+    this.clubs = false;
+  }
+
+  Voids.prototype.update = function (cards) {
+    this.spades = !cards.some(([val, suit]) => suit === 'S');
+    this.hearts = !cards.some(([val, suit]) => suit === 'H');
+    this.diamonds = !cards.some(([val, suit]) => suit === 'D');
+    this.clubs = !cards.some(([val, suit]) => suit === 'C');
+  };
+
   function Hand (id, pass, receive) {
     this.id = id;
     this.score = 0;
     this.cards = [];
     this.valid = [];
+    this.current = [];
+    this.played = [];
+    this.voids = new Voids();
     this.pass = pass;
     this.receive = receive;
   }
@@ -252,22 +269,34 @@ define(["events", "options"], function(events, options){
         const players = new Map();
         (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => current.round.hands.push(new Hand(v.id)));
         e.detail.players.forEach(v => players.set(v.id, v));
-        current.round.hands.forEach(v => v.cards = players.get(v.id).row.cards.map(card));
+        current.round.hands.forEach(v => {
+          v.cards = players.get(v.id).row.cards.map(card);
+          v.current = v.cards.slice(0);
+          v.voids.update(v.current);
+        });
         current.round === selected.round && renderHands(current.round.hands);
         console.log(e, current);
       });
 
       events.on('trick-playing', e => {
-        current.round.hands.find(v => v.id === e.detail.player.id).valid = e.detail.valid.map(card);
+        const hand = current.round.hands.find(v => v.id === e.detail.player.id);
+        current.round.hands.forEach(v => v.voids.update(v.current));
+        hand.valid = e.detail.valid.map(card);
+        hand.voids.update(hand.current);
         console.log(e, current);
       });
 
       events.on('trick-played', e => {
+        const hand = current.round.hands.find(v => v.id === e.detail.player.id);
+        const played = card(e.detail.card);
         if (e.detail.played === 0) {
           current.trick = new Trick(e.detail.player.id);
         }
-        current.trick.cards.push(new PlayedCard(e.detail.player.id, card(e.detail.card)));
-        current.round.played.push(card(e.detail.card));
+        current.trick.cards.push(new PlayedCard(e.detail.player.id, played));
+        hand.played.push(played);
+        hand.current.splice(hand.current.indexOf(played), 1);
+        hand.voids.update(hand.current);
+        current.round.played.push(played);
         console.log(e, current);
       });
 
