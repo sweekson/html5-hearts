@@ -30,6 +30,7 @@ define(["events", "options"], function(events, options){
     this.round = round;
     this.hands = [];
     this.tricks = [];
+    this.played = [];
   }
 
   function Hand (id, pass, receive) {
@@ -266,6 +267,7 @@ define(["events", "options"], function(events, options){
           current.trick = new Trick(e.detail.player.id);
         }
         current.trick.cards.push(new PlayedCard(e.detail.player.id, card(e.detail.card)));
+        current.round.played.push(card(e.detail.card));
         console.log(e, current);
       });
 
