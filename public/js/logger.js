@@ -352,6 +352,11 @@ define(["events", "options"], function(events, options){
         console.log(e, current);
       });
     },
+    download () {
+      const data = JSON.stringify(games, null, 2);
+      const blob = new Blob([data], { type: 'application/json' });
+      return URL.createObjectURL(blob);
+    },
     get current () { return current; },
     get previous () { return previous; },
     get games () { return games; },

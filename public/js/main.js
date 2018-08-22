@@ -51,5 +51,9 @@ function(game,    $,        domBinding,   layout,   config,   logger,   options)
         layout.adjust();
         game.adjustLayout();
     });
+    $('#export-logs-btn').on("click", function(e){
+        e.target.href = logger.download();
+        e.target.download = 'games.json';
+    });
     game.newGame();
 });
