@@ -193,23 +193,28 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     })).done(this.next.bind(this));
                 },
                 'playing': function(){
-                    players[currentPlay].setActive(true);
-                    $.when(players[currentPlay].decide(
-                        rules.getValidCards(players[currentPlay].row.cards,
-                                            board.desk.cards[0] ? board.desk.cards[0].suit : -1,
-                                            heartBroken),
+                    const current = players[currentPlay];
+                    const valid = rules.getValidCards(
+                        current.row.cards,
+                        board.desk.cards[0] ? board.desk.cards[0].suit : -1,
+                        heartBroken
+                    );
+                    current.setActive(true);
+                    events.trigger('trick-playing', { rounds, played, player: current, valid });
+                    $.when(current.decide(
+                        valid,
                         board.desk.cards,
                         board.desk.players,
                         players.map(function(p){
                             return p.getScore();
                         })), waitDefer(200))
                     .done(function(card){
-                        events.trigger('trick-playing', { rounds, player: players[currentPlay], card, played });
-                        players[currentPlay].setActive(false);
+                        events.trigger('trick-played', { rounds, played, player: current, card });
+                        current.setActive(false);
                         card.parent.out(card);
-                        board.desk.addCard(card, players[currentPlay]);
+                        board.desk.addCard(card,current);
                         card.adjustPos();
-                        informCardOut(players[currentPlay], card);
+                        informCardOut(current, card);
                         this.next();
                     }.bind(this));
                 },

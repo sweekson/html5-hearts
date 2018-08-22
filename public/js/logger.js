@@ -256,6 +256,11 @@ define(["events", "options"], function(events, options){
       });
 
       events.on('trick-playing', e => {
+        current.round.hands.find(v => v.id === e.detail.player.id).valid = e.detail.valid.map(card);
+        console.log(e, current);
+      });
+
+      events.on('trick-played', e => {
         if (e.detail.played === 0) {
           current.trick = new Trick(e.detail.player.id);
         }
