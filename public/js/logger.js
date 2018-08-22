@@ -36,6 +36,7 @@ define(["events", "options"], function(events, options){
     this.id = id;
     this.score = 0;
     this.cards = [];
+    this.valid = [];
     this.pass = pass;
     this.receive = receive;
   }
