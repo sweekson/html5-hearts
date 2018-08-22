@@ -45,6 +45,7 @@ define(["events", "options"], function(events, options){
     this.hands = [];
     this.tricks = [];
     this.played = [];
+    this.isHeartBroken = false;
   }
 
   function Voids () {
@@ -236,7 +237,7 @@ define(["events", "options"], function(events, options){
   function renderTrick (index, trick, round) {
     const $row = $('<tr>').append($('<td>').text(index + 1));
     const played = new Map();
-    trick.isHeartBroken && $row.addClass('heart-broken');
+    current.round.isHeartBroken !== trick.isHeartBroken && $row.addClass('heart-broken');
     trick.cards.forEach(v => played.set(v.player, v.card));
     round.hands.forEach(v => $row.append(renderPlayedCard(v, played.get(v.id), trick)));
     $row.click(e => {
@@ -345,6 +346,7 @@ define(["events", "options"], function(events, options){
         current.game.players.forEach(v => v.score = scores.get(v.id));
         current.round === selected.round && renderTrick(current.round.tricks.indexOf(current.trick), current.trick, current.round);
         current.round === selected.round && renderRoundScore(current.round);
+        current.round.isHeartBroken = current.trick.isHeartBroken;
         previous.trick = current.trick;
         current.trick = null;
         console.log(e, current);
