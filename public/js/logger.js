@@ -207,7 +207,7 @@ define(["events", "options"], function(events, options){
   function renderTrick (index, trick, round) {
     const $row = $('<tr>').append($('<td>').text(index + 1));
     const played = new Map();
-    trick.isHeartBroken && $('<tr>').addClass('heart-broken');
+    trick.isHeartBroken && $row.addClass('heart-broken');
     trick.cards.forEach(v => played.set(v.player, v.card));
     round.hands.forEach(v => $row.append(renderPlayedCard(v, played.get(v.id), trick)));
     $row.click(e => {
