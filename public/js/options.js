@@ -16,5 +16,8 @@ define(["util"], function(util){
     logs () {
       return util.search(/logs=(on)/, 1) === 'on';
     },
+    visualize () {
+      return util.search(/visualize=(on)/, 1) === 'on';
+    },
   };
 });
