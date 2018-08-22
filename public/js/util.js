@@ -24,9 +24,26 @@ define(function(){
     return matches[index];
   }
 
+  function enableAutoScroll (node, options) {
+    const config = { attributes: false, childList: true, subtree: true };
+    const bottomBound = Number(options.bottomBound);
+    const scrollToBottom = () => {
+      const scrollTop = node.scrollTop;
+      const clientHeight = node.clientHeight;
+      const scrollHeight = node.scrollHeight;
+      const shouldScroll = (scrollHeight - scrollTop - clientHeight) < bottomBound;
+      shouldScroll && (node.scrollTop = scrollHeight);
+    };
+    const observer = new MutationObserver(_ => {
+      bottomBound && scrollToBottom();
+    });
+    observer.observe(node, config);
+  }
+
   return {
     $: $,
     vendorPrefix: vendorPrefix,
-    search
+    search,
+    enableAutoScroll,
   };
 });
