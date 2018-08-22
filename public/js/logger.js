@@ -1,4 +1,4 @@
-define(["events", "options"], function(events, options){
+define(["events", "options", "util"], function(events, options, util){
   const games = [];
   const previous = { game: null, round: null, trick: null, scores: null };
   const current = { game: null, round: null, trick: null, scores: null };
@@ -268,6 +268,7 @@ define(["events", "options"], function(events, options){
   return {
     init ($container) {
       renderSections($container);
+      util.enableAutoScroll($container.get(0), { bottomBound: 60 });
 
       events.on('game-start', e => {
         current.game = new Game();
