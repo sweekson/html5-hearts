@@ -797,33 +797,39 @@ input[type="number"]{
 }
 
 .poker-card {
-  display: inline-block;
+	background-color: #eee;
+	display: inline-block;
+	box-sizing: border-box;
   border: 1px solid #bbb;
   border-radius: 4px;
-  color: #555;
+  color: #222;
   font-size: 28px;
   line-height: 22px;
   height: 60px;
   width: 45px;
+	margin: 0 8px 8px 0;
   padding: 6px;
   text-align: center;
   vertical-align: middle;
-}
-
-.poker-card + .poker-card {
-  margin-left: 8px;
 }
 
 .poker-card-xs {
   font-size: 16px;
   line-height: 12px;
   height: 32px;
-  width: 24px;
+	width: 24px;
+	margin: 0 4px 4px 0;
   padding: 3px;
 }
 
-.poker-card-xs + .poker-card-xs {
-  margin-left: 4px;
+.poker-card.card-played {
+	background: #444;
+	border: 1px solid #444;
+}
+
+.trick-lead > .poker-card {
+	background: #fa2;
+	border: 1px solid #fa2;
 }
 
 .poker-card.hearts,
@@ -840,6 +846,6 @@ input[type="number"]{
 }
 
 .poker-card-number,
-.poker-card-symbol {
+.poker-card-suit {
   display: block;
 }
