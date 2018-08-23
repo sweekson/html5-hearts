@@ -202,6 +202,7 @@ td[contentEditable]{
 	display: block;
 	box-sizing: border-box;
 	font-size: 17px;
+	font-weight: normal;
 	cursor: pointer;
 	color: white;
 	text-align: center;
@@ -225,6 +226,10 @@ td[contentEditable]{
 	padding-top: 6px;
 	padding-bottom: 4px;
 	background: #111;
+}
+
+#main-button-group>.main-button > input[type=file] {
+	display: none;
 }
 
 #newgame-but{
@@ -437,7 +442,7 @@ td[contentEditable]{
 	bottom: 0;
 	left: 0;
 	box-sizing: border-box;
-	padding: 15px;
+	padding: 15px 0;
 	overflow: auto;
 	transition: width .5s ease-in;
 	z-index: 99;
@@ -521,7 +526,7 @@ td[contentEditable]{
 
 .table-logs > thead > tr > th:first-child,
 .table-logs > tbody > tr > td:first-child {
-	width: 16px;
+	width: 24px;
 }
 
 .table-logs > thead > tr > th:nth-child(n+2) {

@@ -55,5 +55,8 @@ function(game,    $,        domBinding,   layout,   config,   logger,   options)
         e.target.href = logger.download();
         e.target.download = 'games.json';
     });
+    $('#import-logs-btn').on("change", function(e){
+        logger.import(e.target.files[0]);
+    });
     game.newGame();
 });

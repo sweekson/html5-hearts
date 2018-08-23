@@ -1,9 +1,11 @@
 define(["events", "options", "util"], function(events, options, util){
   const games = [];
+  const records = [];
   const previous = { game: null, round: null, trick: null, scores: null };
   const current = { game: null, round: null, trick: null, scores: null };
   const ui = {
     $games: $('<div class="logs-list">'),
+    $records: $('<div class="logs-list">'),
     $rounds: $('<div class="logs-list">'),
     $hands: $('<div>'),
     $tricks: $('<tbody>'),
@@ -106,9 +108,10 @@ define(["events", "options", "util"], function(events, options, util){
   function renderSections ($container) {
     $container.empty();
     $container.append(
-      $('<div class="logs-row">').append($('<div class="logs-title">').text('Games'), ui.$games),
-      $('<div class="logs-row">').append($('<div class="logs-title">').text('Rounds'), ui.$rounds),
-      $('<div>').append(
+      $('<div class="logs-row col-xs-6">').append($('<div class="logs-title">').text('Games'), ui.$games),
+      $('<div class="logs-row col-xs-6" hidden>').append($('<div class="logs-title">').text('Imported Games'), ui.$records),
+      $('<div class="logs-row col-xs-12">').append($('<div class="logs-title">').text('Rounds'), ui.$rounds),
+      $('<div class="col-xs-12">').append(
         $('<div class="logs-title">').text('Detail'),
         ui.$hands,
         $('<div>').append($('<table class="table-logs table-selectable">').append(ui.$tricks, ui.$score)),
@@ -116,20 +119,34 @@ define(["events", "options", "util"], function(events, options, util){
     );
   }
 
-  function renderGameItem (id, data) {
+  function renderGameItem (index, data) {
     const $item = $('<span class="logs-item">');
-    $item.text(id).click(e => selected.game = data);
-    selected.game === data && $item.addClass('selected');
+    $item.text(index + 1).click(e => {
+      selected.$game.removeClass('selected');
+      $item.addClass('selected');
+      selected.game = data;
+      selected.$game = $item;
+      selected.round = data.rounds[0];
+      renderRoundItems();
+      renderDetail(selected.round);
+    });
+    selected.game === data && $item.addClass('selected') && (selected.$game = $item);
     return $item;
   }
 
   function renderNewGame (index, game) {
-    ui.$games.append(renderGameItem(index + 1, game));
+    ui.$games.append(renderGameItem(index, game));
   }
 
   function renderGames () {
     ui.$games.empty();
-    games.forEach((v, i) => ui.$games.append(renderGameItem(i + 1, v)));
+    games.forEach((v, i) => ui.$games.append(renderGameItem(i, v)));
+  }
+
+  function renderGameRecords () {
+    ui.$records.empty();
+    ui.$records.parent().prop('hidden', false);
+    records.forEach((v, i) => ui.$records.append(renderGameItem(i, v)));
   }
 
   function renderRoundItem (id, data) {
@@ -147,11 +164,11 @@ define(["events", "options", "util"], function(events, options, util){
     return $item;
   }
 
-  function renderNewRound (index, round) {
+  function renderNewRoundItem (index, round) {
     ui.$rounds.append(renderRoundItem(index + 1, round));
   }
 
-  function renderRounds () {
+  function renderRoundItems () {
     ui.$rounds.empty();
     selected.game.rounds.forEach((v, i) => ui.$rounds.append(renderRoundItem(i + 1, v)));
   }
@@ -237,7 +254,8 @@ define(["events", "options", "util"], function(events, options, util){
   function renderTrick (index, trick, round) {
     const $row = $('<tr>').append($('<td>').text(index + 1));
     const played = new Map();
-    current.round.isHeartBroken !== trick.isHeartBroken && $row.addClass('heart-broken');
+    round.isHeartBroken !== trick.isHeartBroken && $row.addClass('heart-broken');
+    round.isHeartBroken = trick.isHeartBroken;
     trick.cards.forEach(v => played.set(v.player, v.card));
     round.hands.forEach(v => $row.append(renderPlayedCard(v, played.get(v.id), trick)));
     $row.click(e => {
@@ -254,6 +272,7 @@ define(["events", "options", "util"], function(events, options, util){
   function renderTricks (round) {
     ui.$tricks.empty();
     if (!round.tricks.length) { return; }
+    round.isHeartBroken = false;
     round.tricks.forEach((v, i) => renderTrick(i, v, round));
   }
 
@@ -263,6 +282,12 @@ define(["events", "options", "util"], function(events, options, util){
     const $row = $('<tr>').append($('<td>'));
     round.hands.forEach(v => $row.append($('<td>').text(v.score)));
     ui.$score.append($row);
+  }
+
+  function renderDetail (round) {
+    renderHands(round.hands);
+    renderTricks(round);
+    renderRoundScore(round);
   }
 
   return {
@@ -285,7 +310,7 @@ define(["events", "options", "util"], function(events, options, util){
         current.game.rounds.push(current.round);
         current.game.players.forEach(v => current.scores.set(v.id, 0));
         !selected.round && (selected.round = current.round);
-        current.game === selected.game && renderNewRound(current.game.rounds.indexOf(current.round), current.round);
+        current.game === selected.game && renderNewRoundItem(current.game.rounds.indexOf(current.round), current.round);
         console.log(e, current);
       });
 
@@ -347,7 +372,6 @@ define(["events", "options", "util"], function(events, options, util){
         current.game.players.forEach(v => v.score = scores.get(v.id));
         current.round === selected.round && renderTrick(current.round.tricks.indexOf(current.trick), current.trick, current.round);
         current.round === selected.round && renderRoundScore(current.round);
-        current.round.isHeartBroken = current.trick.isHeartBroken;
         previous.trick = current.trick;
         current.trick = null;
         console.log(e, current);
@@ -388,6 +412,14 @@ define(["events", "options", "util"], function(events, options, util){
       const data = JSON.stringify(games, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       return URL.createObjectURL(blob);
+    },
+    import (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        records.unshift(...JSON.parse(e.target.result));
+        renderGameRecords();
+      };
+      reader.readAsText(file);
     },
     get current () { return current; },
     get previous () { return previous; },
