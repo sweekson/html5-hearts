@@ -32,7 +32,7 @@ function(game,    $,        domBinding,   layout,   config,   logger,   options)
         });
         config.sync();
     });
-    $('.newgame-but').on("click", function(){
+    $('#newgame-but').on("click", function(){
         if(confirm("This will end the current game. Are you sure?")){
             game.newGame();
         }
