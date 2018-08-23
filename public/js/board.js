@@ -21,9 +21,12 @@ function(Card,  $,         layout){
                 c.display.setSelectable(false);
             });
         },
+        setDeck (deck) {
+            carddeck = deck;
+        },
         shuffleDeck: function(){
             var i;
-            
+
             for(i = 0; i < 52; i++){
                 var ran = Math.floor(Math.random() * (52 - i));
                 var tmp = carddeck[ran];

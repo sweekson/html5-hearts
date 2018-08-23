@@ -1,4 +1,4 @@
-define(["events", "options", "util"], function(events, options, util){
+define(["events", "options", "util", "board", "game"], function(events, options, util, board, game){
   const games = [];
   const records = [];
   const previous = { game: null, round: null, trick: null, scores: null };
@@ -420,6 +420,14 @@ define(["events", "options", "util"], function(events, options, util){
         renderGameRecords();
       };
       reader.readAsText(file);
+    },
+    replay () {
+      const deck = [];
+      const cards = Array(52).fill('');
+      cards.forEach((v, i) => cards[i] = card({ num: i % 13 + 1, suit: i % 4 }));
+      selected.round.hands.forEach(v => v.cards.forEach((c, i) => deck[v.id + i * 4] = cards.indexOf(c)));
+      board.setDeck(deck);
+      game.replay();
     },
     get current () { return current; },
     get previous () { return previous; },

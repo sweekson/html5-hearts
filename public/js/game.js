@@ -12,7 +12,8 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
 
     var status = "prepare",
         currentPlay = 0,
-        played = 0;
+        played = 0,
+        replay = false;
 
     var heartBroken = false;
 
@@ -95,6 +96,21 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
             status = 'prepare';
             this.proceed();
         },
+        replay () {
+            clearTimeout(nextTimer);
+            ui.hideWin();
+            ui.clearEvents();
+            players.forEach(function(p, i){
+                p.clearScore();
+                p.setActive(false);
+                p.setName(config.names[i]);
+            });
+            replay = true;
+            rounds = 0;
+            status = 'prepare';
+            this.proceed();
+            replay = false;
+        },
         next: function(){
             if (status == 'confirming'){
                 currentPlay = board.cards[26].parent.playedBy.id;
@@ -139,7 +155,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     });
                     board.init();
                     heartBroken = false;
-                    (rounds === 0 || options.replay() < rounds) && board.shuffleDeck();
+                    (rounds === 0 || options.replay() < rounds) && !replay && board.shuffleDeck();
                     initBrains().done(this.next.bind(this));
                     events.trigger('round-prepare', { players });
                 },

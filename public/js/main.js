@@ -58,5 +58,8 @@ function(game,    $,        domBinding,   layout,   config,   logger,   options)
     $('#import-logs-btn').on("change", function(e){
         logger.import(e.target.files[0]);
     });
+    $('#replay-round').on("click", function(e){
+        logger.replay();
+    });
     game.newGame();
 });
