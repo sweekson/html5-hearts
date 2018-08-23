@@ -15,14 +15,22 @@
 <body ontouchstart="">
 	<div id="game-logs"></div>
 	<div id="main-button-group">
-		<button class="main-button" id="newgame-but">New Game</button>
-		<button class="main-button" id="settings-but">Settings</button>
-		<button class="main-button" id="logs-btn">View Logs</button>
-		<a class="main-button" id="export-logs-btn">Export Logs</a>
-		<label class="main-button" id="import-logs-btn">
-			<input type="file" hidden>
-			Import Logs
-		</label>
+		<div class="dropdown">
+			<button class="main-button" data-toggle="dropdown">
+				Actions <span class="caret"></span>
+			</button>
+			<ul class="dropdown-menu">
+				<li><a href="#" id="newgame-but">New Game</a></li>
+				<li><a href="#" id="logs-btn">View Logs</a></li>
+				<li><a href="#" id="export-logs-btn">Export Logs</a></li>
+				<li>
+					<a href=""><label id="import-logs-btn">
+							<input type="file" hidden>Import Logs
+						</label></a>
+				</li>
+				<li><a href="#" id="settings-but">Settings</a></li>
+			</ul>
+		</div>
 	</div>
 	<div id="game-region"></div>
 	<div id="control-region" hidden>
@@ -66,6 +74,8 @@
 		<button class="back-but">Back</button>
 		<button class="newgame-but">Apply</button>
 	</div>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script data-main="js/main" src="js/lib/require.js"></script>
 	<script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

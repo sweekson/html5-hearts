@@ -190,46 +190,55 @@ td[contentEditable]{
 	position: absolute;
 	left: 10px;
 	top: 10px;
-	width: 150px;
 	z-index: 10;
 }
 
-#main-button-group>.main-button{
+.main-button{
 	-webkit-appearance: none;
 	background: #0000;
-	border: 1px solid #444;
+	border: 0;
 	border-radius: 50em;
 	display: block;
 	box-sizing: border-box;
 	font-size: 17px;
 	font-weight: normal;
 	cursor: pointer;
-	color: white;
+	color: #ccc;
 	text-align: center;
 	text-decoration: none;
 	margin-bottom: 10px;
 	padding: 5px 10px;
-	float: left;
-	width: 100%;
 }
 
-#main-button-group>.main-button:hover{
-	background-image:-webkit-linear-gradient(top, #444, #222);
-	background-image:-moz-linear-gradient(top, #444, #222);
-	background-image:-ms-linear-gradient(top, #444, #222);
-	background-image:-o-linear-gradient(top, #444, #222);
-	background-image:linear-gradient(top, #444, #222);
-	box-shadow: 0 0 5px #333;
+.main-button:hover{
+	color: #fff;
 }
 
-#main-button-group>.main-button:active{
-	padding-top: 6px;
-	padding-bottom: 4px;
-	background: #111;
+#main-button-group .dropdown-menu {
+	background-color: #222;
+	box-shadow: 0 0 15px #000;
 }
 
-#main-button-group>.main-button > input[type=file] {
+.dropdown-menu a > label {
+	font-weight: normal;
+	margin: 0;
+}
+
+.dropdown-menu input[type=file] {
 	display: none;
+}
+
+.dropdown-menu li > a,
+.dropdown-menu li > label {
+	color: #eee;
+	cursor: pointer;
+}
+
+.dropdown-menu li > a:hover,
+.dropdown-menu li > a:focus,
+.dropdown-menu li > label:hover {
+	background-color: #333;
+	color: #fff;
 }
 
 #newgame-but{
