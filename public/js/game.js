@@ -226,17 +226,6 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     this.next();
                 },
                 'end': function(){
-                    if(players.some(function(p){
-                        return p.getScore() === 26;
-                    })){
-                        players.forEach(function(p){
-                            if(p.getScore() !== 26){
-                                p.setScore(26);
-                            }else{
-                                p.setScore(0);
-                            }
-                        });
-                    }
                     players.forEach(function(p){
                         p.finalizeScore();
                     });

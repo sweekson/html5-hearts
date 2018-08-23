@@ -243,7 +243,7 @@ define(["events", "options", "util"], function(events, options, util){
   function renderPlayedCard (player, card, trick) {
     const $cell = $('<td>');
     const $card = options.visualize() ? renderCard(card[1], card[0]) : $('<span class="trick-card">').text(card);
-    const $score = $('<span class="trick-score">').text(`(+${trick.score})`);
+    const $score = $('<span class="trick-score">').text(trick.score >= 0 ? `(+${trick.score})` : `(${trick.score})`);
     $cell.append($card);
     player.id === trick.lead && $cell.addClass('trick-lead');
     player.id === trick.won && $cell.addClass('trick-won');

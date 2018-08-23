@@ -77,7 +77,7 @@ function(Row ,  Waste,   domBinding){
 
     Player.prototype.incrementScore = function(val){
         this.setScore(this._score + val);
-        if(val > 0) this.display.highlight();
+        if(val !== 0) this.display.highlight();
     };
 
     Player.prototype.getScore = function(){

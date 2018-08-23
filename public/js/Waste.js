@@ -31,14 +31,10 @@ function(layout){
     };
 
     Waste.prototype.addCards = function(cards){
-        this.playedBy.incrementScore(cards.reduce(function(p, c){
-            if(c.suit === 1){
-                return p + 1;
-            }else if(c.suit === 0 && c.num === 11){
-                return p + 13;
-            }else{
-                return p;
-            }
+        this.playedBy.incrementScore(cards.reduce(function(s, c){
+            if (c.suit === 1) { return s - 1; }
+            if (c.suit === 0 && c.num === 11) { return s - 13; }
+            return s;
         }, 0));
         var finalCard;
         for(var i = 0; i < cards.length; i++){
