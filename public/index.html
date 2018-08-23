@@ -10,13 +10,13 @@
 	<meta charset="UTF-8">
 	<title>Hearts</title>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
-	<link rel='stylesheet' href='style.css' type='text/css' />
+	<link rel="stylesheet" href="style.css" type="text/css" />
 </head>
 <body ontouchstart="">
 	<div id="game-logs"></div>
-	<div id = 'main-button-group'>
-		<button class = 'main-button newgame-but'>New Game</button>
-		<button class = 'main-button' id = 'settings-but'>Settings</button>
+	<div id = "main-button-group">
+		<button class = "main-button newgame-but">New Game</button>
+		<button class = "main-button" id = "settings-but">Settings</button>
 		<button class="main-button" id="logs-btn">View Logs</button>
 		<a class="main-button" id="export-logs-btn">Export Logs</a>
 		<label class="main-button" id="import-logs-btn">
@@ -24,9 +24,9 @@
 			Import Logs
 		</label>
 	</div>
-	<div id = 'game-region'></div>
-	<div id = 'control-region' hidden>
-		<div id = 'settings-dialog' hidden>
+	<div id = "game-region"></div>
+	<div id = "control-region" hidden>
+		<div id = "settings-dialog" hidden>
 			<h3>Settings</h3>
 			<table>
 				<tbody>
@@ -37,26 +37,26 @@
 					</tr>
 					<tr>
 						<td>Player 1(you):</td>
-						<td class = 'player-set-name one' contentEditable></td>
+						<td class = "player-set-name one" contentEditable></td>
 					</tr>
 					<tr>
 						<td>Player 2(East):</td>
-						<td class = 'player-set-name two' contentEditable></td>
-						<td class = 'player-diff two'>
+						<td class = "player-set-name two" contentEditable></td>
+						<td class = "player-diff two">
 							<input type="number" min="1" max="4">
 						</td>
 					</tr>
 					<tr>
 						<td>Player 3(North):</td>
-						<td class = 'player-set-name three' contentEditable></td>
-						<td class = 'player-diff three'>
+						<td class = "player-set-name three" contentEditable></td>
+						<td class = "player-diff three">
 							<input type="number" min="1" max="4">
 						</td>
 					</tr>
 					<tr>
 						<td>Player 4(West):</td>
-						<td class = 'player-set-name four' contentEditable></td>
-						<td class = 'player-diff four'>
+						<td class = "player-set-name four" contentEditable></td>
+						<td class = "player-diff four">
 							<input type="number" min="1" max="4">
 						</td>
 					</tr>
@@ -66,7 +66,7 @@
 		<button class="back-but">Back</button>
 		<button class="newgame-but">Apply</button>
 	</div>
-	<script data-main='js/main' src='js/lib/require.js'></script>
+	<script data-main="js/main" src="js/lib/require.js"></script>
 	<script>
 	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
 	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
