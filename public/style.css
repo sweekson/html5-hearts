@@ -591,6 +591,7 @@ td[contentEditable]{
 	background-image:-ms-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(0,0,0, 0.8));
 	background-image:-o-linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(0,0,0, 0.8));
 	background-image:linear-gradient(top, rgba(30, 30, 30, 0.8), rgba(0,0,0, 0.8));
+	width: auto;
 }
 
 .info-board.highlight{
