@@ -583,6 +583,10 @@ td[contentEditable]{
 	margin-right: 4px;
 }
 
+.trick-card.card-special {
+	color: #0cd;
+}
+
 .info-board{
 	position: absolute;
 	z-index: 200;
@@ -851,6 +855,11 @@ input[type="number"]{
 .poker-card.card-played {
 	background: #444;
 	border: 1px solid #444;
+}
+
+.poker-card.card-special {
+	background: #0cd;
+	border: 1px solid #0cd;
 }
 
 .trick-lead > .poker-card {
