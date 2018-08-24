@@ -432,6 +432,10 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       const cards = Array(52).fill('');
       cards.forEach((v, i) => cards[i] = card({ num: i % 13 + 1, suit: i % 4 }));
       selected.round.hands.forEach(v => v.cards.forEach((c, i) => deck[v.id + i * 4] = cards.indexOf(c)));
+      board.cards.forEach((v, i) => v.display.dom.css({
+        transform: `rotateY(180deg) translate3d(-${i * .25}px, ${i * .25}px, 0)`,
+        zIndex: 51 - i
+      }));
       board.setDeck(deck);
       game.replay();
     },
