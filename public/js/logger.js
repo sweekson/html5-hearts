@@ -86,8 +86,10 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     this.cards = data.cards.map(card);
   }
 
-  function Trick (lead) {
+  function Trick (lead, leadCard) {
     this.lead = lead;
+    this.leadCard = leadCard;
+    this.leadSuit = leadCard[1];
     this.won = null;
     this.score = 0;
     this.cards = [];
@@ -353,7 +355,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
         const hand = current.round.hands.find(v => v.id === e.detail.player.id);
         const played = card(e.detail.card);
         if (e.detail.played === 0) {
-          current.trick = new Trick(e.detail.player.id);
+          current.trick = new Trick(e.detail.player.id, played);
         }
         current.trick.cards.push(new PlayedCard(e.detail.player.id, played));
         hand.played.push(played);
