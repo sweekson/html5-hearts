@@ -70,6 +70,11 @@ function(Row ,  Waste,   domBinding){
     };
 
     Player.prototype.finalizeScore = function(){
+        const findQS = v => v.suit === 0 && v.num === 11;
+        const findH = v => v.suit === 1;
+        const cards = this.waste.cards;
+        const shootTheMoon = cards.filter(findH).length === 13 && cards.find(findQS) !== null;
+        shootTheMoon && (this._score = 4 * -this._score);
         this._oldScore += this._score;
         this._score = 0;
         this.display.setFinalText(this._oldScore);

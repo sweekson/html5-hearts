@@ -31,7 +31,12 @@ function(layout){
     };
 
     Waste.prototype.addCards = function(cards){
-        this.playedBy.incrementScore(cards.reduce(function(s, c){
+        const findTC = v => v.suit === 2 && v.num === 9;
+        const hadTC = this.cards.find(findTC) != null;
+        const hasTC = cards.find(findTC) != null;
+        const multiply = hadTC || hasTC ? 2 : 1;
+        hasTC && this.playedBy.setScore(this.playedBy.getScore() * 2);
+        this.playedBy.incrementScore(multiply * cards.reduce(function(s, c){
             if (c.suit === 1) { return s - 1; }
             if (c.suit === 0 && c.num === 11) { return s - 13; }
             return s;
