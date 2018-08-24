@@ -422,7 +422,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     import (file) {
       const reader = new FileReader();
       reader.onload = e => {
-        records.unshift(...JSON.parse(e.target.result));
+        records.push(...JSON.parse(e.target.result));
         renderGameRecords();
       };
       reader.readAsText(file);
