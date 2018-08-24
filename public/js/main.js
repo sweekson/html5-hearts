@@ -1,11 +1,21 @@
 require({
     baseUrl: 'js',
     paths: {
-        jquery: 'lib/jquery-2.0.3.min'
+        jquery: 'lib/jquery-2.0.3.min',
+        jqueryui: 'lib/jquery-ui.min',
+        bootstrap: 'lib/bootstrap.min',
+    },
+    shim: {
+        jqueryui: {
+            deps: ['jquery']
+        },
+        bootstrap: {
+            deps: ['jquery']
+        }
     }
 },
-        ["game", "jquery", "domBinding", "layout", "config", "logger", "options"],
-function(game,    $,        domBinding,   layout,   config,   logger,   options){
+        ["game", "jquery", "jqueryui", "bootstrap",  "domBinding", "layout", "config", "logger", "options"],
+function(game,    $,        jqueryui,   bootstrap,    domBinding,   layout,   config,   logger,   options){
     "use strict";
 
     logger.init($('#game-logs').addClass(options.logs() ? 'in' : ''));
