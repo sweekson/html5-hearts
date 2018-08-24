@@ -13,7 +13,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
   };
   const selected = { game: null, $game: null, round: null, $round: null, $trick: null };
   const suits = {
-    classname: {
+    fullname: {
       H: 'hearts',
       D: 'diamonds',
       S: 'spades',
@@ -182,7 +182,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
   }
 
   function renderCard (suit, number) {
-    const $card = $('<span class="poker-card poker-card-xs">').addClass(suits.classname[suit]);
+    const $card = $('<span class="poker-card poker-card-xs">').addClass(suits.fullname[suit]);
     return $card.append(
       $('<span class="poker-card-number">').text(number),
       $('<span class="poker-card-suit">').html(suits.entities[suit]),
