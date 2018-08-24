@@ -160,12 +160,18 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       renderTricks(data);
       renderRoundScore(data);
     });
-    selected.round === data && $item.addClass('selected') && (selected.$round = $item);
+    if (selected.round === data) {
+      $item.addClass('selected');
+      selected.$round && selected.$round.removeClass('selected');
+      selected.$round = $item;
+    }
     return $item;
   }
 
   function renderNewRoundItem (index, round) {
     ui.$rounds.append(renderRoundItem(index + 1, round));
+    renderTricks(round);
+    renderRoundScore(round);
   }
 
   function renderRoundItems () {
@@ -309,7 +315,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
         current.scores = new Map();
         current.game.rounds.push(current.round);
         current.game.players.forEach(v => current.scores.set(v.id, 0));
-        !selected.round && (selected.round = current.round);
+        selected.round = current.round;
         current.game === selected.game && renderNewRoundItem(current.game.rounds.indexOf(current.round), current.round);
         console.log(e, current);
       });
