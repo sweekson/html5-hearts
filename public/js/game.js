@@ -258,9 +258,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         p.adjustPos();
                     });
                     events.trigger('round-end', { rounds, players });
-                    if(players.some(function(p){
-                        return p._oldScore >= 100;
-                    })){
+                    if(rounds === 4){
                         players.forEach(function(p){
                             p.display.moveUp = true;
                             p.display.adjustPos();
