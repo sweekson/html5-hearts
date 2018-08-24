@@ -237,10 +237,10 @@ define(["events", "options", "util", "board", "game"], function(events, options,
         suit === 'D' && cards.diamonds.push(number);
         suit === 'C' && cards.clubs.push(number);
       });
-      $spades.append($('<td>').append(renderNumbers('S', cards.spades, played)));
-      $hearts.append($('<td>').append(renderNumbers('H', cards.hearts, played)));
-      $diamonds.append($('<td>').append(renderNumbers('D', cards.diamonds, played)));
-      $clubs.append($('<td>').append(renderNumbers('C', cards.clubs, played)));
+      $spades.append($('<td class="hand-spades">').append(renderNumbers('S', cards.spades, played)));
+      $hearts.append($('<td class="hand-hearts">').append(renderNumbers('H', cards.hearts, played)));
+      $diamonds.append($('<td class="hand-diamonds">').append(renderNumbers('D', cards.diamonds, played)));
+      $clubs.append($('<td class="hand-clubs">').append(renderNumbers('C', cards.clubs, played)));
     });
 
     ui.$hands.empty().append($table);
