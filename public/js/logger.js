@@ -92,6 +92,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     this.leadCard = leadCard;
     this.leadSuit = leadCard[1];
     this.won = null;
+    this.wonCard = null;
     this.score = 0;
     this.cards = [];
     this.isHeartBroken = false;
@@ -375,6 +376,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
         const players = e.detail.players;
         const scores = new Map();
         current.trick.won = id;
+        current.trick.wonCard = current.trick.cards.find(v => v.player === id).card;
         current.trick.score = score - current.scores.get(id);
         current.trick.isHeartBroken = e.detail.heartBroken || false;
         current.scores.set(id, score);
