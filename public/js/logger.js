@@ -95,6 +95,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     this.score = 0;
     this.cards = [];
     this.isHeartBroken = false;
+    this.hasPenaltyCard = false;
   }
 
   function PlayedCard (player, card) {
@@ -360,6 +361,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
           current.trick = new Trick(e.detail.player.id, played);
         }
         current.trick.cards.push(new PlayedCard(e.detail.player.id, played));
+        current.trick.hasPenaltyCard = current.trick.cards.some(({ card }) => card === 'QS' || card[1] === 'H');
         hand.played.push(played);
         hand.current.splice(hand.current.indexOf(played), 1);
         hand.voids.update(hand.current);
