@@ -74,6 +74,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     this.voids = new Voids();
     this.pass = pass;
     this.receive = receive;
+    this.canFollowLead = false;
   }
 
   function Pass (data) {
@@ -347,6 +348,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
         const hand = current.round.hands.find(v => v.id === e.detail.player.id);
         current.round.hands.forEach(v => v.voids.update(v.current));
         hand.valid = e.detail.valid.map(card);
+        hand.canFollowLead = !current.trick ? true : hand.valid.some(([rank, suit]) => suit === current.trick.leadSuit);
         hand.voids.update(hand.current);
         console.log(e, current);
       });
