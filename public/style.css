@@ -241,6 +241,10 @@ td[contentEditable]{
 	color: #fff;
 }
 
+.dropdown-menu .divider {
+	background-color: #444;
+}
+
 #newgame-but{
 
 }
