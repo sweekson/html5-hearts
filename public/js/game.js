@@ -68,10 +68,10 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         });
     };
 
-    var getPlayerForTransferTo = function(id){
+    var getPlayerForTransferTo = function(rounds, id){
         return (id + [2, 1, 3][rounds % 3]) % 4;
     };
-    var getPlayerForTransferFrom = function(id){
+    var getPlayerForTransferFrom = function(rounds, id){
         return (id + [2, 3, 1][rounds % 3]) % 4;
     };
     var shouldPassCards = _ => rounds % 4 !== 0;
@@ -178,26 +178,28 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     if (!shouldPassCards() || !options.passing()) { return this.next(); }
 
                     $.when.apply($, players.map(function(p){
-                        return p.prepareTransfer(rounds % 4);
+                        return p.prepareTransfer((options.dir() || rounds) % 4);
                     })).done(this.next.bind(this));
                 },
                 'passing': function(){
                     if (!shouldPassCards() || !options.passing()) { return this.next(); }
+
+                    const dir = options.dir() || rounds;
 
                     events.trigger('round-passing', {
                         rounds,
                         players,
                         transfer: players.map((v, i) => {
                             const id = v.id;
-                            const toPlayer = players[getPlayerForTransferTo(i)];
+                            const toPlayer = players[getPlayerForTransferTo(dir, i)];
                             const pass = { to: toPlayer.id, cards: v.selected };
-                            const fromPlayer = players[getPlayerForTransferFrom(i)];
+                            const fromPlayer = players[getPlayerForTransferFrom(dir, i)];
                             const receive = { from: fromPlayer.id, cards: fromPlayer.selected };
                             return { id, pass, receive };
                         })
                     });
                     for(var i = 0; i < 4; i++){
-                        players[i].transferTo(players[getPlayerForTransferTo(i)]);
+                        players[i].transferTo(players[getPlayerForTransferTo(dir, i)]);
                     }
                     this.next();
                 },
