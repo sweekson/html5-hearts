@@ -37,6 +37,12 @@ function(Player,  $){
         });
     };
 
+    Ai.prototype.expose = function(){
+        var random = Math.floor(Math.random() * 2);
+        var cards = random ? this.row.cards.filter(c => c.suit === 1 && c.num === 13) : [];
+        return $.Deferred().resolve(cards);
+    };
+
     Ai.prototype.watch = function(info){
         this.brain.watch(info);
     };

@@ -35,6 +35,15 @@ function(Player,  $,         ui){
         return d;
     };
 
+    Human.prototype.expose = function(){
+        var df = $.Deferred();
+        var cards = this.row.cards.filter(c => c.suit === 1 && c.num === 13);
+        ui.showExposeConfirm().then(function (yes) {
+            df.resolve(yes ? cards : []);
+        });
+        return df;
+    };
+
     Human.prototype.confirmTransfer = function(){
         ui.showButton("Confirm");
         ui.hideArrow();

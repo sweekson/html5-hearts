@@ -15,6 +15,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         played = 0,
         replay = false;
 
+    var exposed = [];
     var heartBroken = false;
 
     var nextTimer = 0;
@@ -130,7 +131,8 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     'distribute': 'start',
                     'start': 'passing',
                     'passing': 'confirming',
-                    'confirming': 'playing',
+                    'confirming': 'exposing',
+                    'exposing': 'playing',
                     'playing': 'playing',
                     'endRound': 'playing',
                     'end': 'prepare'
@@ -207,6 +209,15 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     $.when.apply($, players.map(function(p){
                         return p.confirmTransfer();
                     })).done(this.next.bind(this));
+                },
+                'exposing': function() {
+                    const current = players.find(v => v.row.cards.find(c => c.suit === 1 && c.num === 13));
+                    events.trigger('round-exposing', { rounds, players });
+                    $.when(current.expose(), waitDefer(200)).done((cards) => {
+                        exposed.push(...cards);
+                        exposed.forEach(c => c.display.dom.addClass('exposed'));
+                        this.next();
+                    });
                 },
                 'playing': function(){
                     const current = players[currentPlay];

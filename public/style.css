@@ -102,6 +102,11 @@ td[contentEditable]{
 	z-index: 999;
 }
 
+.btn-primary {
+	background-color: #444;
+	border-color: #666;
+}
+
 #control-region[hidden]{
 	-webkit-transform: perspective(1000px) translateY(-200px) rotateX(90deg);
 	-moz-transform: perspective(1000px) translateY(-200px) rotateX(-90deg);
@@ -485,6 +490,33 @@ td[contentEditable]{
 	left: calc(50vw + 340px);
 }
 
+#expose-confirm {
+	background: #111;
+	border: 1px solid #000;
+	border-radius: 4px;
+	box-shadow: 0 0 15px #000;
+	color: #fff;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translateX(-50%) translateY(-50%);
+	padding: 20px;
+	width: 240px;
+	height: 130px;
+	text-align: center;
+	z-index: 99;
+}
+
+#game-logs.in ~ #expose-confirm {
+	left: calc(50vw + 340px);
+}
+
+.confirm-title {
+	font-size: 16px;
+	line-height: 1;
+	margin: 1em 0;
+}
+
 .logs-row {
 	margin-bottom: 15px;
 }
@@ -792,6 +824,10 @@ td[contentEditable]{
 
 .card.diamond .front, .card.diamond .icon{
 	background-image:url('img/diamond.png');
+}
+
+.card.exposed .front{
+	background-color: #6ff;
 }
 
 .card .icon{

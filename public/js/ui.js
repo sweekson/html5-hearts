@@ -17,6 +17,10 @@ define(function(){
     document.body.appendChild(message);
     document.body.appendChild(endMessage);
 
+    var $expose = $('#expose-confirm');
+    var $exposeYes = $('#expose-yes');
+    var $exposeNo = $('#expose-no');
+
     return {
         clearEvents: function(){
             $(button).off("click");
@@ -57,6 +61,19 @@ define(function(){
         },
         hideWin: function(){
             endMessage.classList.remove("show");
+        },
+        showExposeConfirm: function () {
+            var df = $.Deferred();
+            $expose.prop('hidden', false);
+            $exposeYes.off('click').one('click', _ => {
+                df.resolve(true);
+                $expose.prop('hidden', true);
+            });
+            $exposeNo.off('click').one('click', _ => {
+                df.resolve(false);
+                $expose.prop('hidden', true);
+            });
+            return df;
         },
         showMessage: function(msg){
             message.innerHTML = msg;
