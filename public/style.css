@@ -319,6 +319,10 @@ td[contentEditable]{
 	text-shadow: 0 0 1px black;
 }
 
+#game-logs.in ~ #pass-arrow {
+	left: calc(50vw + 340px);
+}
+
 #play-button{
 	position: absolute;
 	-webkit-appearance: none;
@@ -395,7 +399,7 @@ td[contentEditable]{
 
 #game-message{
 	position: absolute;
-	margin-left: -210px;
+	margin-left: -190px;
 	top: 40%;
 	left: 50%;
 	width: 380px;
