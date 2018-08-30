@@ -13,6 +13,11 @@ define(["util"], function(util){
     passing () {
       return util.search(/passing=(no)/, 1) !== 'no';
     },
+    dir () {
+      const val = util.search(/pass-dir=(left|right|opposite)/, 1);
+      const dirs = { left: 1, right: 2, opposite: 3 };
+      return !val ? null : dirs[val];
+    },
     logs () {
       return util.search(/logs=(on)/, 1) === 'on';
     },
