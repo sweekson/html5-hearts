@@ -1,17 +1,18 @@
-define(["events", "options", "util", "board", "game"], function(events, options, util, board, game){
-  const games = [];
+define(["events", "options", "util", "board", "game", "hears-models"], function(events, options, util, board, game, models){
+  const { Match, Game, Player, Deal, Cards, Card, PlayedCard, Hand, Pass, Round } = models;
+  const match = new Match();
   const records = [];
-  const previous = { game: null, round: null, trick: null, scores: null };
-  const current = { game: null, round: null, trick: null, scores: null };
+  const previous = { game: null, deal: null, round: null, scores: null };
+  const current = { match, game: null, deal: null, round: null, scores: null };
   const ui = {
     $games: $('<div class="logs-list">'),
     $records: $('<div class="logs-list">'),
-    $rounds: $('<div class="logs-list">'),
+    $deals: $('<div class="logs-list">'),
     $hands: $('<div>'),
-    $tricks: $('<tbody>'),
+    $rounds: $('<tbody>'),
     $score: $('<tfoot>'),
   };
-  const selected = { game: null, $game: null, round: null, $round: null, $trick: null };
+  const selected = { game: null, $game: null, deal: null, $deal: null, $round: null };
   const suits = {
     fullname: {
       H: 'hearts',
@@ -31,83 +32,6 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     }
   };
 
-  function Game (table) {
-    this.table = table || 0;
-    this.winners = [];
-    this.players = [];
-    this.rounds = [];
-    this.ts = Date.now();
-  }
-
-  function Player (id, name, position) {
-    this.id = id;
-    this.name = name;
-    this.position = position;
-    this.score = 0;
-  }
-
-  function Round (round) {
-    this.round = round;
-    this.hands = [];
-    this.tricks = [];
-    this.played = [];
-    this.isHeartBroken = false;
-  }
-
-  function Voids () {
-    this.spades = false;
-    this.hearts = false;
-    this.diamonds = false;
-    this.clubs = false;
-  }
-
-  Voids.prototype.update = function (cards) {
-    this.spades = !cards.some(([val, suit]) => suit === 'S');
-    this.hearts = !cards.some(([val, suit]) => suit === 'H');
-    this.diamonds = !cards.some(([val, suit]) => suit === 'D');
-    this.clubs = !cards.some(([val, suit]) => suit === 'C');
-  };
-
-  function Hand (id, pass, receive) {
-    this.id = id;
-    this.score = 0;
-    this.cards = [];
-    this.valid = [];
-    this.current = [];
-    this.played = [];
-    this.voids = new Voids();
-    this.pass = pass;
-    this.receive = receive;
-    this.canFollowLead = false;
-  }
-
-  function Pass (data) {
-    this.to = data.to;
-    this.cards = data.cards.map(card);
-  }
-
-  function Receive (data) {
-    this.from = data.from;
-    this.cards = data.cards.map(card);
-  }
-
-  function Trick (lead, leadCard) {
-    this.lead = lead;
-    this.leadCard = leadCard;
-    this.leadSuit = leadCard[1];
-    this.won = null;
-    this.wonCard = null;
-    this.score = 0;
-    this.cards = [];
-    this.isHeartBroken = false;
-    this.hasPenaltyCard = false;
-  }
-
-  function PlayedCard (player, card) {
-    this.player = player;
-    this.card = card;
-  }
-
   function card (data) {
     const numbers = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
     const suits = ['S', 'H', 'C', 'D'];
@@ -119,109 +43,108 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     $container.append(
       $('<div class="logs-row col-xs-6">').append($('<div class="logs-title">').text('Games'), ui.$games),
       $('<div class="logs-row col-xs-6" hidden>').append($('<div class="logs-title">').text('Imported Games'), ui.$records),
-      $('<div class="logs-row col-xs-12">').append($('<div class="logs-title">').text('Rounds'), ui.$rounds),
+      $('<div class="logs-row col-xs-12">').append($('<div class="logs-title">').text('Deals'), ui.$deals),
       $('<div class="col-xs-12">').append(
         $('<div class="logs-title">').text('Detail'),
         ui.$hands,
-        $('<div>').append($('<table class="table-logs table-selectable">').append(ui.$tricks, ui.$score)),
+        $('<div>').append($('<table class="table-logs table-selectable">').append(ui.$rounds, ui.$score)),
       ),
     );
   }
 
-  function renderGameItem (index, data) {
+  function renderGameItem (game) {
     const $item = $('<span class="logs-item">');
-    $item.text(index + 1).click(e => {
+    $item.text(game.number).click(e => {
       selected.$game.removeClass('selected');
       $item.addClass('selected');
-      selected.game = data;
+      selected.game = game;
       selected.$game = $item;
-      selected.round = data.rounds[0];
-      renderRoundItems();
-      renderDetail(selected.round);
+      selected.deal = game.deals.first;
+      renderDealItems();
+      renderDetail(selected.deal);
     });
-    selected.game === data && $item.addClass('selected') && (selected.$game = $item);
+    selected.game === game && $item.addClass('selected') && (selected.$game = $item);
     return $item;
   }
 
-  function renderNewGame (index, game) {
-    ui.$games.append(renderGameItem(index, game));
+  function renderNewGame (game) {
+    ui.$games.append(renderGameItem(game));
   }
 
   function renderGames () {
     ui.$games.empty();
-    games.forEach((v, i) => ui.$games.append(renderGameItem(i, v)));
+    match.games.each((v, i) => ui.$games.append(renderGameItem(i, v)));
   }
 
   function renderGameRecords () {
     ui.$records.empty();
     ui.$records.parent().prop('hidden', false);
-    records.forEach((v, i) => ui.$records.append(renderGameItem(i, v)));
+    records.forEach(v => ui.$records.append(renderGameItem(v)));
   }
 
-  function renderRoundItem (id, data) {
+  function renderDealItem (deal) {
     const $item = $('<span class="logs-item">');
-    $item.text(id).click(e => {
-      selected.$round.removeClass('selected');
+    $item.text(deal.number).click(e => {
+      selected.$deal.removeClass('selected');
       $item.addClass('selected');
-      selected.round = data;
-      selected.$round = $item;
-      renderHands(data.hands);
-      renderTricks(data);
-      renderRoundScore(data);
+      selected.deal = deal;
+      selected.$deal = $item;
+      renderHands(deal.hands);
+      renderRounds(deal);
+      renderDealScore(deal);
     });
-    if (selected.round === data) {
+    if (selected.deal === deal) {
       $item.addClass('selected');
-      selected.$round && selected.$round.removeClass('selected');
-      selected.$round = $item;
+      selected.$deal && selected.$deal.removeClass('selected');
+      selected.$deal = $item;
     }
     return $item;
   }
 
-  function renderNewRoundItem (index, round) {
-    ui.$rounds.append(renderRoundItem(index + 1, round));
-    renderTricks(round);
-    renderRoundScore(round);
+  function renderNewDealItem (deal) {
+    ui.$deals.append(renderDealItem(deal));
+    renderRounds(deal);
+    renderDealScore(deal);
   }
 
-  function renderRoundItems () {
-    ui.$rounds.empty();
-    selected.game.rounds.forEach((v, i) => ui.$rounds.append(renderRoundItem(i + 1, v)));
+  function renderDealItems () {
+    ui.$deals.empty();
+    selected.game.deals.each((v, i) => ui.$deals.append(renderDealItem(v)));
   }
 
-  function renderCard (suit, number) {
-    const $card = $('<span class="poker-card poker-card-xs">').addClass(suits.fullname[suit]);
+  function renderCard (card) {
+    const $card = $('<span class="poker-card poker-card-xs">').addClass(suits.fullname[card.suit]);
     return $card.append(
-      $('<span class="poker-card-number">').text(number),
-      $('<span class="poker-card-suit">').html(suits.entities[suit]),
+      $('<span class="poker-card-number">').text(card.rank),
+      $('<span class="poker-card-suit">').html(suits.entities[card.suit]),
     );
   }
 
-  function renderNumbers (suit, numbers, played) {
+  function renderSuitCards (cards, played) {
     if (options.visualize()) {
-      return numbers.map(v => {
-        const $card = renderCard(suit, v);
-        played.indexOf(`${v}${suit}`) > -1 && $card.addClass('card-played');
+      return cards.map(v => {
+        const $card = renderCard(v);
+        played.contains(v.value) && $card.addClass('card-played');
         return $card;
       });
     }
-    return numbers.map(v => {
-      const $card = $('<span class="card-number">').text(v);
-      played.indexOf(`${v}${suit}`) > -1 && $card.addClass('card-played');
+    return cards.map(v => {
+      const $card = $('<span class="card-number">').text(v.rank);
+      played.contains(v.value) && $card.addClass('card-played');
       return $card;
     });
   }
 
-  function renderHands (hands, tricks) {
+  function renderHands (hands, rounds) {
     const $table = $('<table class="table-logs">');
     const $head = $('<tr>');
     const $spades = $('<tr>');
     const $hearts = $('<tr>');
     const $diamonds = $('<tr>');
     const $clubs = $('<tr>');
-    const cards = { spades: [], hhearts: [], diamonds: [], clubs: []};
-    const played = [];
+    const played = new Cards();
 
-    tricks && tricks.forEach(v => played.push(...v.cards.map(v => v.card)));
+    rounds && rounds.forEach(v => played.push(...v.played.list));
 
     $head.append('<th>');
     $spades.append('<td>S</td>');
@@ -234,76 +157,64 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       $('<tbody>').append($spades, $hearts, $diamonds, $clubs),
     );
 
-    hands.forEach(player => {
-      cards.spades = [];
-      cards.hearts = [];
-      cards.diamonds = [];
-      cards.clubs = [];
-      $head.append($('<th>').append(player.id));
-      player.cards.forEach(([number, suit]) => {
-        suit === 'S' && cards.spades.push(number);
-        suit === 'H' && cards.hearts.push(number);
-        suit === 'D' && cards.diamonds.push(number);
-        suit === 'C' && cards.clubs.push(number);
-      });
-      $spades.append($('<td class="hand-spades">').append(renderNumbers('S', cards.spades, played)));
-      $hearts.append($('<td class="hand-hearts">').append(renderNumbers('H', cards.hearts, played)));
-      $diamonds.append($('<td class="hand-diamonds">').append(renderNumbers('D', cards.diamonds, played)));
-      $clubs.append($('<td class="hand-clubs">').append(renderNumbers('C', cards.clubs, played)));
+    hands.each(hand => {
+      $head.append($('<th>').append(hand.player));
+      $spades.append($('<td class="hand-spades">').append(renderSuitCards(hand.cards.spades.list, played)));
+      $hearts.append($('<td class="hand-hearts">').append(renderSuitCards(hand.cards.hearts.list, played)));
+      $diamonds.append($('<td class="hand-diamonds">').append(renderSuitCards(hand.cards.diamonds.list, played)));
+      $clubs.append($('<td class="hand-clubs">').append(renderSuitCards(hand.cards.clubs.list, played)));
     });
 
     ui.$hands.empty().append($table);
   }
 
-  function renderPlayedCard (player, card, trick) {
+  function renderPlayedCard (player, card, round) {
     const $cell = $('<td>');
-    const $card = options.visualize() ? renderCard(card[1], card[0]) : $('<span class="trick-card">').text(card);
-    const $score = $('<span class="trick-score">').text(trick.score >= 0 ? `(+${trick.score})` : `(${trick.score})`);
+    const $card = options.visualize() ? renderCard(card) : $('<span class="trick-card">').text(card);
+    const $score = $('<span class="trick-score">').text(round.score >= 0 ? `(+${round.score})` : `(${round.score})`);
     $cell.append($card);
     card === 'TC' && $card.addClass('card-special');
-    player.id === trick.lead && $cell.addClass('trick-lead');
-    player.id === trick.won && $cell.addClass('trick-won');
-    player.id === trick.won && $cell.append($score);
+    player === round.lead.player && $cell.addClass('trick-lead');
+    player === round.won.player && $cell.addClass('trick-won');
+    player === round.won.player && $cell.append($score);
     return $cell;
   }
 
-  function renderTrick (index, trick, round) {
-    const $row = $('<tr>').append($('<td>').text(index + 1));
-    const played = new Map();
-    round.isHeartBroken !== trick.isHeartBroken && $row.addClass('heart-broken');
-    round.isHeartBroken = trick.isHeartBroken;
-    trick.cards.forEach(v => played.set(v.player, v.card));
-    round.hands.forEach(v => $row.append(renderPlayedCard(v, played.get(v.id), trick)));
+  function renderRound (round, deal, index) {
+    const $row = $('<tr>').append($('<td>').text(round.number));
+    deal.isHeartBroken !== round.isHeartBroken && $row.addClass('heart-broken');
+    deal.isHeartBroken = round.isHeartBroken;
+    deal.hands.each(v => $row.append(renderPlayedCard(v.player, round.played.get(v.player), round)));
     $row.click(e => {
-      selected.$trick && selected.$trick.removeClass('selected');
-      selected.$trick !== $row && $row.addClass('selected');
-      selected.$trick = null;
-      $row.hasClass('selected') && (selected.$trick = $row);
-      selected.$trick && renderHands(selected.round.hands, selected.round.tricks.slice(0, index));
-      !selected.$trick && renderHands(selected.round.hands);
+      selected.$round && selected.$round.removeClass('selected');
+      selected.$round !== $row && $row.addClass('selected');
+      selected.$round = null;
+      $row.hasClass('selected') && (selected.$round = $row);
+      selected.$round && renderHands(selected.deal.hands, selected.deal.rounds.list.slice(0, index));
+      !selected.$round && renderHands(selected.deal.hands);
     });
-    ui.$tricks.append($row);
+    ui.$rounds.append($row);
   }
 
-  function renderTricks (round) {
-    ui.$tricks.empty();
-    if (!round.tricks.length) { return; }
-    round.isHeartBroken = false;
-    round.tricks.forEach((v, i) => renderTrick(i, v, round));
+  function renderRounds (deal) {
+    ui.$rounds.empty();
+    if (!deal.rounds.length) { return; }
+    deal.isHeartBroken = false;
+    deal.rounds.each((v, i) => renderRound(v, deal, i));
   }
 
-  function renderRoundScore (round) {
+  function renderDealScore (deal) {
     ui.$score.empty();
-    if (!round.tricks.length) { return; }
+    if (!deal.rounds.length) { return; }
     const $row = $('<tr>').append($('<td>'));
-    round.hands.forEach(v => $row.append($('<td>').text(v.score)));
+    deal.hands.each(v => $row.append($('<td>').text(v.score)));
     ui.$score.append($row);
   }
 
-  function renderDetail (round) {
-    renderHands(round.hands);
-    renderTricks(round);
-    renderRoundScore(round);
+  function renderDetail (deal) {
+    renderHands(deal.hands);
+    renderRounds(deal);
+    renderDealScore(deal);
   }
 
   return {
@@ -312,107 +223,117 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       util.enableAutoScroll($container.get(0), { bottomBound: 60 });
 
       events.on('game-start', e => {
-        current.game = new Game();
-        games.push(current.game);
+        match.self = 0;
+        current.game = new Game(match.games.length + 1);
+        match.games.add(game.number, current.game);
         !selected.game && (selected.game = current.game);
-        renderNewGame(games.indexOf(current.game), current.game);
+        current.game.isFirst && e.detail.players.forEach(v => match.players.add(
+          v.id,
+          new Player(v.id, v.getName())
+        ));
+        renderNewGame(current.game);
         console.log(e, current);
       });
 
       events.on('round-start', e => {
-        current.game.players = e.detail.players.map(v => new Player(v.id, v.getName(), v.id));
-        current.round = new Round(e.detail.rounds);
+        const game = current.game;
+        const deal = current.deal = new Deal(e.detail.rounds);
         current.scores = new Map();
-        current.game.rounds.push(current.round);
-        current.game.players.forEach(v => current.scores.set(v.id, 0));
-        selected.round = current.round;
-        current.game === selected.game && renderNewRoundItem(current.game.rounds.indexOf(current.round), current.round);
+        game.deals.push(deal);
+        match.players.each(v => current.scores.set(v.number, 0));
+        selected.deal = deal;
+        game === selected.game && renderNewDealItem(deal);
         console.log(e, current);
       });
 
       events.on('round-passing', e => {
         e.detail.transfer.forEach(v => {
-          current.round.hands.push(new Hand(v.id, new Pass(v.pass), new Receive(v.receive)));
+          current.deal.hands.push(new Hand(v.id, new Pass(v.pass), new Pass(v.receive)));
         });
         console.log(e, current);
       });
 
       events.on('round-confirming', e => {
-        const players = new Map();
-        (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => current.round.hands.push(new Hand(v.id)));
-        e.detail.players.forEach(v => players.set(v.id, v));
-        current.round.hands.forEach(v => {
-          v.cards = players.get(v.id).row.cards.map(card);
-          v.current = v.cards.slice(0);
-          v.voids.update(v.current);
+        const deal = current.deal;
+        (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => deal.hands.add(v.id, new Hand(v.id)));
+        e.detail.players.forEach(v => {
+          const hand = deal.hands.get(v.id);
+          hand.cards.push(...v.row.cards.map(v => new Card(card(v))));
+          hand.current.push(...hand.cards.list);
+          hand.voids.update(hand.current);
         });
-        current.round === selected.round && renderHands(current.round.hands);
+        deal === selected.deal && renderHands(deal.hands);
         console.log(e, current);
       });
 
       events.on('trick-playing', e => {
-        const hand = current.round.hands.find(v => v.id === e.detail.player.id);
-        current.round.hands.forEach(v => v.voids.update(v.current));
-        hand.valid = e.detail.valid.map(card);
-        hand.canFollowLead = !current.trick ? true : hand.valid.some(([rank, suit]) => suit === current.trick.leadSuit);
+        const deal = current.deal;
+        const round = current.round;
+        const hand = deal.hands.get(e.detail.player.id);
+        deal.hands.each(v => v.voids.update(v.current));
+        hand.valid.clear();
+        hand.valid.push(...Cards.create(e.detail.valid.map(card)));
         hand.voids.update(hand.current);
+        hand.canFollowLead = !round ? true : hand.valid.list.some(v => v.suit === round.lead.suit);
         console.log(e, current);
       });
 
       events.on('trick-played', e => {
-        const hand = current.round.hands.find(v => v.id === e.detail.player.id);
-        const played = card(e.detail.card);
+        const deal = current.deal;
+        const player = e.detail.player.id;
+        const hand = deal.hands.get(player);
+        const played = new PlayedCard(e.detail.player.id, card(e.detail.card));
         if (e.detail.played === 0) {
-          current.trick = new Trick(e.detail.player.id, played);
+          current.round = new Round(deal.rounds.length + 1);
         }
-        current.trick.cards.push(new PlayedCard(e.detail.player.id, played));
-        current.trick.hasPenaltyCard = current.trick.cards.some(({ card }) => card === 'QS' || card[1] === 'H');
-        hand.played.push(played);
-        hand.current.splice(hand.current.indexOf(played), 1);
+        const round = current.round;
+        round.played.add(player, played);
+        round.played.length === 1 && (round.lead = played);
+        hand.played.push(new Card(card(e.detail.card)));
+        hand.current.discard(e.detail.card);
         hand.voids.update(hand.current);
-        current.round.played.push(played);
+        deal.played.push(played);
+        played.suit !== round.lead.suit && (hand.voids[round.lead.fullsuit] = true);
         console.log(e, current);
       });
 
       events.on('trick-end', e => {
-        const id = e.detail.won.player.id;
+        const deal = current.deal;
+        const round = current.round;
+        const player = e.detail.won.player.id;
         const score = e.detail.won.player.getScore();
         const players = e.detail.players;
         const scores = new Map();
-        current.trick.won = id;
-        current.trick.wonCard = current.trick.cards.find(v => v.player === id).card;
-        current.trick.score = score - current.scores.get(id);
-        current.trick.isHeartBroken = e.detail.heartBroken || false;
-        current.scores.set(id, score);
-        current.round.tricks.push(current.trick);
+        round.won = round.played.get(player);
+        round.score = score - current.scores.get(player);
+        round.isHeartBroken = e.detail.heartBroken || false;
+        current.scores.set(player, score);
+        deal.rounds.push(round);
         players.forEach(v => scores.set(v.id, v.getScore()));
-        current.round.hands.forEach(v => v.score = scores.get(v.id));
+        deal.hands.each(v => v.score = scores.get(v.player));
         players.forEach(v => scores.set(v.id, v.getAccumulatedScore() + v.getScore()));
-        current.game.players.forEach(v => v.score = scores.get(v.id));
-        current.round === selected.round && renderTrick(current.round.tricks.indexOf(current.trick), current.trick, current.round);
-        current.round === selected.round && renderRoundScore(current.round);
-        previous.trick = current.trick;
-        current.trick = null;
+        match.players.each(v => v.score = scores.get(v.player));
+        deal === selected.deal && renderRound(round, deal);
+        deal === selected.deal && renderDealScore(deal);
+        previous.round = round;
+        current.round = null;
         console.log(e, current);
       });
 
       events.on('round-end', e => {
+        const deal = current.deal;
         const scores = new Map();
         const players = e.detail.players;
         players.forEach(v => scores.set(v.id, v.getAccumulatedScore()));
-        current.round.hands.forEach((v, i) => {
-          if (!previous.round) {
-            v.score = scores.get(v.id);
-          } else {
-            v.score = scores.get(v.id) - previous.round.hands[i].score;
-          }
+        deal.hands.each(v => {
+          v.score = !previous.deal ? scores.get(v.player) : scores.get(v.player) - previous.deal.hands.get(v.player).score;
         });
         players.forEach(v => scores.set(v.id, v.getAccumulatedScore()));
-        current.game.players.forEach(v => v.score = scores.get(v.id));
-        current.round === selected.round && renderRoundScore(current.round);
-        previous.round = current.round;
+        match.players.each(v => v.score = scores.get(v.number));
+        deal === selected.deal && renderDealScore(deal);
+        previous.deal = deal;
         previous.scores = current.scores;
-        current.round = null;
+        current.deal = null;
         current.scores = null;
         console.log(e, current);
       });
@@ -420,8 +341,6 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       events.on('game-over', e => {
         const players = e.detail.players.sort((a, b) => a.getScore() - b.getScore());
         const minimum = players[0].getScore();
-        const winners = players.filter(v => v.getScore() === minimum);
-        current.game.winners = winners.map(v => v.id);
         previous.game = current.game;
         current.game = null;
         console.log(e, current);
@@ -435,7 +354,38 @@ define(["events", "options", "util", "board", "game"], function(events, options,
     import (file) {
       const reader = new FileReader();
       reader.onload = e => {
-        records.push(...JSON.parse(e.target.result));
+        const data = JSON.parse(e.target.result);
+        const games = data.match.games.map(v => {
+          const game = new Game(v.number);
+          game.deals.push(...v.deals.map(v => {
+            const deal = new Deal(v.number);
+            deal.isHeartBroken = false;
+            deal.hands.push(...v.hands.map(v => {
+              const hand = new Hand(v.player);
+              hand.score = v.score;
+              hand.hadShotTheMoon = v.hadShotTheMoon;
+              hand.exposed.push(...Cards.create(v.exposed));
+              hand.cards.push(...Cards.create(v.cards));
+              hand.played.push(...Cards.create(v.played));
+              hand.gained.push(...Cards.create(v.gained));
+              v.pass && (hand.pass = new Pass(v.pass.player, new Cards(v.pass.cards)));
+              v.receive && (hand.receive = new Pass(v.receive.player, new Cards(v.receive.cards)));
+              return hand;
+            }));
+            deal.rounds.push(...v.rounds.map(v => {
+              const round = new Round(v.number);
+              round.lead = new PlayedCard(v.lead.player, v.lead.card);
+              round.won = new PlayedCard(v.won.player, v.won.card);
+              round.score = v.score;
+              round.isHeartBroken = v.isHeartBroken;
+              v.played.forEach(v => round.played.add(v.player, new PlayedCard(v.player, v.card)));
+              return round;
+            }));
+            return deal;
+          }));
+          return game;
+        });
+        records.push(...games);
         renderGameRecords();
       };
       reader.readAsText(file);
@@ -444,7 +394,7 @@ define(["events", "options", "util", "board", "game"], function(events, options,
       const deck = [];
       const cards = Array(52).fill('');
       cards.forEach((v, i) => cards[i] = card({ num: i % 13 + 1, suit: i % 4 }));
-      selected.round.hands.forEach(v => v.cards.forEach((c, i) => deck[v.id + i * 4] = cards.indexOf(c)));
+      selected.deal.hands.each(v => v.cards.forEach((c, i) => deck[v.player + i * 4] = cards.indexOf(c)));
       board.cards.forEach((v, i) => v.display.dom.css({
         transform: `rotateY(180deg) translate3d(-${i * .25}px, ${i * .25}px, 0)`,
         zIndex: 51 - i
