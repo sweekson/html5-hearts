@@ -66,7 +66,7 @@ function(game,    $,        jqueryui,   bootstrap,    domBinding,   layout,   co
         e.target.download = 'games.json';
     });
     $('#import-logs-btn').on("change", function(e){
-        logger.import(e.target.files[0]);
+        e.target.files.length && logger.import(e.target.files[0]);
     });
     $('#replay-round').on("click", function(e){
         logger.replay();
