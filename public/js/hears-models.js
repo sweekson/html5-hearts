@@ -215,6 +215,13 @@ define(['Collection'], function (Collection) {
       this.diamonds = false;
       this.clubs = false;
     }
+
+    update (cards) {
+      this.spades = cards.spades.length === 0;
+      this.hearts = cards.hearts.length === 0;
+      this.diamonds = cards.diamonds.length === 0;
+      this.clubs = cards.clubs.length === 0;
+    }
   }
 
   class Hand {
