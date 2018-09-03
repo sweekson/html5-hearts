@@ -230,7 +230,6 @@ define(['Collection'], function (Collection) {
       this.score = 0;
       this.cards = new Cards();
       this.exposed = new Cards();
-      this.current = new Cards();
       this.played = new Cards();
       this.valid = new Cards();
       this.gained = new Cards();
@@ -239,6 +238,10 @@ define(['Collection'], function (Collection) {
       this.receive = null;
       this.canFollowLead = false;
       this.hadShotTheMoon = false;
+    }
+
+    get current () {
+      return this.cards.skip(...this.played.values);
     }
   }
 
