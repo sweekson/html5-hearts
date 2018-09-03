@@ -235,7 +235,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('round-start', e => {
+      events.on('deal-start', e => {
         const game = current.game;
         const deal = current.deal = new Deal(e.detail.rounds);
         current.scores = new Map();
@@ -246,7 +246,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('round-passing', e => {
+      events.on('deal-passing', e => {
         e.detail.transfer.forEach(v => {
           const hand = new Hand(v.id);
           hand.pass = new Pass(v.pass.to, new Cards(v.pass.cards.map(toCardValue)));
@@ -256,7 +256,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('round-confirming', e => {
+      events.on('deal-confirming', e => {
         const deal = current.deal;
         (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => deal.hands.add(v.id, new Hand(v.id)));
         e.detail.players.forEach(v => {
@@ -269,7 +269,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('trick-playing', e => {
+      events.on('round-playing', e => {
         const deal = current.deal;
         const round = current.round;
         const hand = deal.hands.get(e.detail.player.id);
@@ -281,7 +281,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('trick-played', e => {
+      events.on('round-played', e => {
         const deal = current.deal;
         const player = e.detail.player.id;
         const hand = deal.hands.get(player);
@@ -300,7 +300,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('trick-end', e => {
+      events.on('round-end', e => {
         const deal = current.deal;
         const round = current.round;
         const player = e.detail.won.player.id;
@@ -323,7 +323,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         console.log(e, current);
       });
 
-      events.on('round-end', e => {
+      events.on('deal-end', e => {
         const deal = current.deal;
         const scores = new Map();
         const players = e.detail.players;

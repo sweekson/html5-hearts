@@ -173,7 +173,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                 },
                 'start': function(){
                     rounds++;
-                    events.trigger('round-start', { rounds, players });
+                    events.trigger('deal-start', { rounds, players });
 
                     if (!shouldPassCards() || !options.passing()) { return this.next(); }
 
@@ -186,7 +186,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
 
                     const dir = options.dir() || rounds;
 
-                    events.trigger('round-passing', {
+                    events.trigger('deal-passing', {
                         rounds,
                         players,
                         transfer: players.map((v, i) => {
@@ -207,7 +207,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     players.forEach(function(r){
                         r.row.sort();
                     });
-                    events.trigger('round-confirming', { rounds, players });
+                    events.trigger('deal-confirming', { rounds, players });
                     $.when.apply($, players.map(function(p){
                         return p.confirmTransfer();
                     })).done(this.next.bind(this));
@@ -229,7 +229,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         heartBroken
                     );
                     current.setActive(true);
-                    events.trigger('trick-playing', { rounds, played, player: current, valid });
+                    events.trigger('round-playing', { rounds, played, player: current, valid });
                     $.when(current.decide(
                         valid,
                         board.desk.cards,
@@ -238,7 +238,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                             return p.getScore();
                         })), waitDefer(200))
                     .done(function(card){
-                        events.trigger('trick-played', { rounds, played, player: current, card });
+                        events.trigger('round-played', { rounds, played, player: current, card });
                         current.setActive(false);
                         card.parent.out(card);
                         board.desk.addCard(card,current);
@@ -251,7 +251,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     var info = board.desk.score();
                     currentPlay = info[0].id;
                     info[0].waste.addCards(info[1]);
-                    events.trigger('trick-end', { rounds, players, won: { player: info[0], cards: info[1] }, heartBroken });
+                    events.trigger('round-end', { rounds, players, won: { player: info[0], cards: info[1] }, heartBroken });
                     this.next();
                 },
                 'end': function(){
@@ -270,7 +270,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     players.forEach(function(p){
                         p.adjustPos();
                     });
-                    events.trigger('round-end', { rounds, players });
+                    events.trigger('deal-end', { rounds, players });
                     if(rounds === 4){
                         players.forEach(function(p){
                             p.display.moveUp = true;
