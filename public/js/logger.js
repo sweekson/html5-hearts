@@ -248,7 +248,10 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
 
       events.on('round-passing', e => {
         e.detail.transfer.forEach(v => {
-          current.deal.hands.push(new Hand(v.id, new Pass(v.pass), new Pass(v.receive)));
+          const hand = new Hand(v.id);
+          hand.pass = new Pass(v.pass.to, new Cards(v.pass.cards.map(toCardValue)));
+          hand.receive = new Pass(v.receive.from, new Cards(v.receive.cards.map(toCardValue)));
+          current.deal.hands.add(v.id, hand);
         });
         console.log(e, current);
       });
