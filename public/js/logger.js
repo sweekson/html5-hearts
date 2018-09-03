@@ -304,9 +304,11 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         const deal = current.deal;
         const round = current.round;
         const player = e.detail.won.player.id;
+        const hand = deal.hands.get(player);
         const score = e.detail.won.player.getScore();
         const players = e.detail.players;
         const scores = new Map();
+        hand.gained.push(...round.played.penalties);
         round.won = round.played.get(player);
         round.score = score - current.scores.get(player);
         round.isHeartBroken = e.detail.heartBroken || false;
