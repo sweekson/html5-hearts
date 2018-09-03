@@ -371,6 +371,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
               hand.hadShotTheMoon = v.hadShotTheMoon;
               hand.exposed.push(...Cards.create(v.exposed));
               hand.cards.push(...Cards.create(v.cards));
+              v.pass && hand.cards.discard(...v.pass.cards).push(...Cards.create(v.receive.cards)).sort();
               hand.played.push(...Cards.create(v.played));
               hand.gained.push(...Cards.create(v.gained));
               v.pass && (hand.pass = new Pass(v.pass.player, new Cards(v.pass.cards)));
