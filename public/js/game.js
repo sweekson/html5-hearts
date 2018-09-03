@@ -214,7 +214,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                 },
                 'exposing': function() {
                     const current = players.find(v => v.row.cards.find(c => c.suit === 1 && c.num === 13));
-                    events.trigger('round-exposing', { rounds, players });
+                    events.trigger('deal-exposing', { rounds, players });
                     $.when(current.expose(), waitDefer(200)).done((cards) => {
                         exposed.push(...cards);
                         exposed.forEach(c => c.display.dom.addClass('exposed'));
