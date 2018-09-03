@@ -218,6 +218,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     $.when(current.expose(), waitDefer(200)).done((cards) => {
                         exposed.push(...cards);
                         exposed.forEach(c => c.display.dom.addClass('exposed'));
+                        events.trigger('deal-exposed', { rounds, players, exposed });
                         this.next();
                     });
                 },
