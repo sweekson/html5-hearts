@@ -32,7 +32,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
     }
   };
 
-  function card (data) {
+  function toCardValue (data) {
     const numbers = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
     const suits = ['S', 'H', 'C', 'D'];
     return numbers[data.num - 1] + suits[data.suit];
@@ -258,7 +258,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => deal.hands.add(v.id, new Hand(v.id)));
         e.detail.players.forEach(v => {
           const hand = deal.hands.get(v.id);
-          hand.cards.push(...v.row.cards.map(v => new Card(card(v))));
+          hand.cards.push(...v.row.cards.map(v => new Card(toCardValue(v))));
           hand.current.push(...hand.cards.list);
           hand.voids.update(hand.current);
         });
@@ -272,7 +272,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         const hand = deal.hands.get(e.detail.player.id);
         deal.hands.each(v => v.voids.update(v.current));
         hand.valid.clear();
-        hand.valid.push(...Cards.create(e.detail.valid.map(card)));
+        hand.valid.push(...Cards.create(e.detail.valid.map(toCardValue)));
         hand.voids.update(hand.current);
         hand.canFollowLead = !round ? true : hand.valid.list.some(v => v.suit === round.lead.suit);
         console.log(e, current);
@@ -282,14 +282,14 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         const deal = current.deal;
         const player = e.detail.player.id;
         const hand = deal.hands.get(player);
-        const played = new PlayedCard(e.detail.player.id, card(e.detail.card));
+        const played = new PlayedCard(e.detail.player.id, toCardValue(e.detail.card));
         if (e.detail.played === 0) {
           current.round = new Round(deal.rounds.length + 1);
         }
         const round = current.round;
         round.played.add(player, played);
         round.played.length === 1 && (round.lead = played);
-        hand.played.push(new Card(card(e.detail.card)));
+        hand.played.push(new Card(toCardValue(e.detail.card)));
         hand.current.discard(e.detail.card);
         hand.voids.update(hand.current);
         deal.played.push(played);
@@ -393,7 +393,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
     replay () {
       const deck = [];
       const cards = Array(52).fill('');
-      cards.forEach((v, i) => cards[i] = card({ num: i % 13 + 1, suit: i % 4 }));
+      cards.forEach((v, i) => cards[i] = toCardValue({ num: i % 13 + 1, suit: i % 4 }));
       selected.deal.hands.each(v => v.cards.forEach((c, i) => deck[v.player + i * 4] = cards.indexOf(c)));
       board.cards.forEach((v, i) => v.display.dom.css({
         transform: `rotateY(180deg) translate3d(-${i * .25}px, ${i * .25}px, 0)`,
