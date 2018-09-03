@@ -365,7 +365,7 @@ define(['Collection'], function (Collection) {
     }
 
     get followed () {
-      return this.played.suit(this.lead.suit);
+      return this.lead ? this.played.suit(this.lead.suit) : new Cards();
     }
 
     get isLast () {
