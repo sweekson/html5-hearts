@@ -262,7 +262,6 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         e.detail.players.forEach(v => {
           const hand = deal.hands.get(v.id);
           hand.cards.push(...v.row.cards.map(v => new Card(toCardValue(v))));
-          hand.current.push(...hand.cards.list);
           hand.voids.update(hand.current);
         });
         deal === selected.deal && renderHands(deal.hands);
@@ -293,7 +292,6 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         round.played.add(player, played);
         round.played.length === 1 && (round.lead = played);
         hand.played.push(new Card(toCardValue(e.detail.card)));
-        hand.current.discard(e.detail.card);
         hand.voids.update(hand.current);
         deal.played.push(played);
         played.suit !== round.lead.suit && (hand.voids[round.lead.fullsuit] = true);
