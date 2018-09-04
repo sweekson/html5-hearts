@@ -1,4 +1,4 @@
-define(["events", "options", "util", "board", "game", "hears-models"], function(events, options, util, board, game, models){
+define(["events", "options", "util", "board", "hears-models"], function(events, options, util, board, models){
   const { Match, Game, Player, Deal, Cards, Card, PlayedCard, Hand, Pass, Round } = models;
   const match = new Match();
   const records = [];
@@ -406,7 +406,6 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
         zIndex: 51 - i
       }));
       board.setDeck(deck);
-      game.replay();
     },
     get current () { return current; },
     get previous () { return previous; },
