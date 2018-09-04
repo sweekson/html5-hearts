@@ -1,5 +1,5 @@
-define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "PomDPBrain", "options", "events"],
-function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   PomDPBrain,   options,   events){
+define(["ui", "Human", "Ai", "board", "config", "jquery", "rules", "RandomBrain", "AsyncBrain", "SimpleBrain", "BrainProxy", "PomDPBrain", "options", "events"],
+function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,   AsyncBrain,   SimpleBrain,   BrainProxy ,  PomDPBrain,   options,   events){
     "use strict";
 
     var rounds = 0;
@@ -28,6 +28,10 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
         return d;
     };
 
+    var bot1 = options.bot1();
+    var bot2 = options.bot2();
+    var bot3 = options.bot3();
+
     var initBrains = function(){
         // players[0].brain = new AsyncBrain(players[0], "PomDPBrain");
 
@@ -37,15 +41,23 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
             players[3].brain.terminate();
         }
 
-        for(var i = 1; i < 4; i++){
-            if(config.levels[i] == 1){
-                players[i].brain = new SimpleBrain(players[i]);
-            } else if(config.levels[i] == 2){
-                players[i].brain = new AsyncBrain(players[i], "McBrain");
-            } else if(config.levels[i] == 3){
-                players[i].brain = new AsyncBrain(players[i], "PomDPBrain");
-            } else if(config.levels[i] == 4){
-                players[i].brain = new AsyncBrain(players[i], "PomDPBrain", {time: 2000});
+        for(var i = 1, level, player; i < 4; i++){
+            player = players[i];
+            level = config.levels[i];
+            if (level === 1) {
+                player.brain = new SimpleBrain(player);
+            } else if (level === 2) {
+                player.brain = new AsyncBrain(player, "McBrain");
+            } else if (level === 3) {
+                player.brain = new AsyncBrain(player, "PomDPBrain");
+            } else if (level === 4) {
+                player.brain = new AsyncBrain(player, "PomDPBrain", { time: 2000 });
+            } else if (level === bot1.type) {
+                player.brain = new BrainProxy(player, { bot: bot1.name });
+            } else if (level === bot2.type) {
+                player.brain = new BrainProxy(player, { bot: bot2.name });
+            } else if (level === bot3.type) {
+                player.brain = new BrainProxy(player, { bot: bot3.name });
             }
         }
 
