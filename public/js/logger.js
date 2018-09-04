@@ -225,7 +225,7 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
       events.on('game-start', e => {
         match.self = 0;
         current.game = new Game(match.games.length + 1);
-        match.games.add(game.number, current.game);
+        match.games.add(current.game.number, current.game);
         !selected.game && (selected.game = current.game);
         current.game.isFirst && e.detail.players.forEach(v => match.players.add(
           v.id,
