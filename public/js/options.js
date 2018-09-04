@@ -2,7 +2,7 @@ define(["util"], function(util){
   function bot (pattern) {
     const type = util.search(pattern, 1);
     const name = util.search(pattern, 2);
-    return type ? { type, name } : { type: 0 };
+    return type ? { type: Number(type), name } : { type: 0 };
   }
 
   return {
