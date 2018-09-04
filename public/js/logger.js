@@ -272,6 +272,7 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
         const deal = current.deal;
         const round = current.round;
         const hand = deal.hands.get(e.detail.player.id);
+        e.detail.played === 0 && (current.round = new Round(deal.rounds.length + 1));
         deal.hands.each(v => v.voids.update(v.current));
         hand.valid.clear();
         hand.valid.push(...Cards.create(e.detail.valid.map(toCardValue)));
@@ -282,13 +283,10 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
 
       events.on('round-played', e => {
         const deal = current.deal;
+        const round = current.round;
         const player = e.detail.player.id;
         const hand = deal.hands.get(player);
         const played = new PlayedCard(e.detail.player.id, toCardValue(e.detail.card));
-        if (e.detail.played === 0) {
-          current.round = new Round(deal.rounds.length + 1);
-        }
-        const round = current.round;
         round.played.add(player, played);
         round.played.length === 1 && (round.lead = played);
         hand.played.push(new Card(toCardValue(e.detail.card)));
