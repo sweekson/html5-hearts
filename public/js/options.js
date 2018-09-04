@@ -1,8 +1,23 @@
 define(["util"], function(util){
+  function bot (pattern) {
+    const type = util.search(pattern, 1);
+    const name = util.search(pattern, 2);
+    return type ? { type, name } : { type: 0 };
+  }
+
   return {
     brains () {
       const brains = util.search(/brains=(-?\d,\d,\d,\d)/, 1);
       return brains ? brains.split(',').map(Number) : null;
+    },
+    bot1 () {
+      return bot(/bot1=(\d)-(\w+)/);
+    },
+    bot2 () {
+      return bot(/bot2=(\d)-(\w+)/);
+    },
+    bot3 () {
+      return bot(/bot3=(\d)-(\w+)/);
     },
     cheat () {
       return util.search(/cheat=(yes)/, 1) === 'yes';
