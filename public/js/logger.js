@@ -400,7 +400,9 @@ define(["events", "options", "util", "board", "game", "hears-models"], function(
       const deck = [];
       const cards = Array(52).fill('');
       cards.forEach((v, i) => cards[i] = toCardValue({ num: i % 13 + 1, suit: i % 4 }));
-      selected.deal.hands.each(v => v.cards.forEach((c, i) => deck[v.player + i * 4] = cards.indexOf(c)));
+      selected.deal.hands.each((v, i) => {
+        v.cards.each((c, k) => deck[i + k * 4] = cards.indexOf(c.value));
+      });
       board.cards.forEach((v, i) => v.display.dom.css({
         transform: `rotateY(180deg) translate3d(-${i * .25}px, ${i * .25}px, 0)`,
         zIndex: 51 - i
