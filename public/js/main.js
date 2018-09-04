@@ -70,6 +70,7 @@ function(game,    $,        jqueryui,   bootstrap,    domBinding,   layout,   co
     });
     $('#replay-round').on("click", function(e){
         logger.replay();
+        game.replay();
     });
     game.newGame();
 });
