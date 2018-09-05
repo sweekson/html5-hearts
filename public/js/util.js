@@ -40,10 +40,17 @@ define(function(){
     observer.observe(node, config);
   }
 
+  function toCardValue (data) {
+    const numbers = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
+    const suits = ['S', 'H', 'C', 'D'];
+    return numbers[data.num - 1] + suits[data.suit];
+  }
+
   return {
     $: $,
     vendorPrefix: vendorPrefix,
     search,
     enableAutoScroll,
+    toCardValue,
   };
 });
