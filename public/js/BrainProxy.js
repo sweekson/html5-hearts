@@ -1,12 +1,13 @@
-define(['Brain', 'ScoreLessBot', 'HeartsBotC0', 'logger'], function (Brain, ScoreLessBot, HeartsBotC0, logger) {
+define(['Brain', 'ScoreLessBot', 'HeartsBotC0', 'logger', 'util'], function (Brain, ScoreLessBot, HeartsBotC0, logger, util) {
   'use strict';
 
   const Bots = { ScoreLessBot, HeartsBotC0 };
 
-  function toCardValue (data) {
-    const numbers = ['2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A'];
-    const suits = ['S', 'H', 'C', 'D'];
-    return numbers[data.num - 1] + suits[data.suit];
+  function detail (uid) {
+    const { match, game, deal, round } = logger.current;
+    const detail = { match };
+    const hand = deal.hands.get(uid);
+    return { detail, match, game, deal, hand, round };
   }
 
   function BrainProxy (user, options) {
@@ -18,7 +19,7 @@ define(['Brain', 'ScoreLessBot', 'HeartsBotC0', 'logger'], function (Brain, Scor
   BrainProxy.prototype = Object.create(Brain.prototype);
 
   BrainProxy.prototype.passCards = function () {
-
+    return this.bot.pass(detail(this.user.id));
   };
 
   BrainProxy.prototype.exposeCards = function () {
@@ -26,11 +27,8 @@ define(['Brain', 'ScoreLessBot', 'HeartsBotC0', 'logger'], function (Brain, Scor
   };
 
   BrainProxy.prototype.decide = function (validCards, boardCards, boardPlayers, scores) {
-    const { match, game, deal, round } = logger.current;
-    const detail = { match };
-    const hand = deal.hands.get(this.user.id);
-    const picked = this.bot.pick({ detail, match, game, deal, hand, round });
-    const card = validCards.find(v => toCardValue(v) === (picked.value || picked));
+    const picked = this.bot.pick(detail(this.user.id));
+    const card = validCards.find(v => util.toCardValue(v) === (picked.value || picked));
     return $.Deferred().resolve(card.ind);
   };
 

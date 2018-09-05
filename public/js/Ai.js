@@ -1,5 +1,5 @@
-define(["Player", "jquery"],
-function(Player,  $){
+define(["Player", "jquery", "util"],
+function(Player,  $,         util){
     "use strict";
 
     var Ai = function(id, name){
@@ -8,18 +8,22 @@ function(Player,  $){
 
     Ai.prototype = Object.create(Player.prototype);
 
-    Ai.prototype.prepareTransfer = function(){
+    Ai.prototype.fetchRandomCards = function (count) {
         var selected = [], cards = [];
-        while(selected.length < 3){
-            var s = Math.floor(Math.random() * this.row.cards.length);
-            if(selected.indexOf(s) === -1){
-                selected.push(s);
-            }
+        while (selected.length < count) {
+            var index = Math.floor(Math.random() * this.row.cards.length);
+            selected.indexOf(index) === -1 && selected.push(index);
         }
-        for(var i = 0; i < 3; i++){
+        for (var i = 0; i < count; i++) {
             cards.push(this.row.cards[selected[i]]);
         }
-        this.selected = cards;
+        return cards;
+    };
+
+    Ai.prototype.prepareTransfer = function(){
+        this.selected = !this.brain.passCards ? this.fetchRandomCards(3) : this.brain.passCards().map(v => {
+            return this.row.cards.find(c => util.toCardValue(c) === (v.value || v));
+        });
         return $.Deferred().resolve();
     };
 
