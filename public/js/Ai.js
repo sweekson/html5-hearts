@@ -41,9 +41,15 @@ function(Player,  $,         util){
         });
     };
 
-    Ai.prototype.expose = function(){
+    Ai.prototype.fetchRandomExposeCards = function () {
         var random = Math.floor(Math.random() * 2);
-        var cards = random ? this.row.cards.filter(c => c.suit === 1 && c.num === 13) : [];
+        return random ? this.row.cards.filter(c => c.suit === 1 && c.num === 13) : [];
+    };
+
+    Ai.prototype.expose = function(){
+        var cards = !this.brain.exposeCards ? this.fetchRandomExposeCards() : this.brain.exposeCards().map(v => {
+            return this.row.cards.find(c => util.toCardValue(c) === (v.value || v));
+        });
         return $.Deferred().resolve(cards);
     };
 

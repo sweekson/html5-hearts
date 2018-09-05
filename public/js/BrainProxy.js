@@ -23,7 +23,7 @@ define(['Brain', 'ScoreLessBot', 'HeartsBotC0', 'logger', 'util'], function (Bra
   };
 
   BrainProxy.prototype.exposeCards = function () {
-
+    return this.bot.expose(detail(this.user.id));
   };
 
   BrainProxy.prototype.decide = function (validCards, boardCards, boardPlayers, scores) {
