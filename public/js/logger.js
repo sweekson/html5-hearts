@@ -238,6 +238,11 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
       events.on('deal-start', e => {
         const game = current.game;
         const deal = current.deal = new Deal(e.detail.rounds);
+        e.detail.players.forEach(v => {
+          const hand = new Hand(v.id);
+          hand.cards.push(...v.row.cards.map(v => new Card(toCardValue(v))));
+          deal.hands.add(v.id, hand);
+        });
         current.scores = new Map();
         game.deals.push(deal);
         match.players.each(v => current.scores.set(v.number, 0));
@@ -248,20 +253,17 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
 
       events.on('deal-passing', e => {
         e.detail.transfer.forEach(v => {
-          const hand = new Hand(v.id);
+          const hand = current.deal.hands.get(v.id);
           hand.pass = new Pass(v.pass.to, new Cards(v.pass.cards.map(toCardValue)));
           hand.receive = new Pass(v.receive.from, new Cards(v.receive.cards.map(toCardValue)));
-          current.deal.hands.add(v.id, hand);
         });
         console.log(e, current);
       });
 
       events.on('deal-confirming', e => {
         const deal = current.deal;
-        (e.detail.rounds % 4 === 0 || !options.passing()) && e.detail.players.forEach(v => deal.hands.add(v.id, new Hand(v.id)));
         e.detail.players.forEach(v => {
           const hand = deal.hands.get(v.id);
-          hand.cards.push(...v.row.cards.map(v => new Card(toCardValue(v))));
           hand.voids.update(hand.current);
         });
         deal === selected.deal && renderHands(deal.hands);
