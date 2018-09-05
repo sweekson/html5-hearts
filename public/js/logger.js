@@ -270,6 +270,15 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
         console.log(e, current);
       });
 
+      events.on('deal-exposed', e => {
+        const deal = current.deal;
+        const player = e.detail.player.id;
+        const hand = deal.hands.get(player);
+        hand.exposed.push(...Cards.create(e.detail.exposed.map(toCardValue)));
+        deal.exposed.push(...Cards.create(e.detail.exposed.map(toCardValue), player));
+        console.log(e, current);
+      });
+
       events.on('round-playing', e => {
         const deal = current.deal;
         const round = current.round;
