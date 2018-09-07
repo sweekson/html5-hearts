@@ -1,4 +1,4 @@
-define(["events", "options", "util", "board", "hears-models"], function(events, options, util, board, models){
+define(["events", "options", "util", "board", "hears-models", "HeartsClientBase", "HeartsClientMiddleware", "HeartsBotBase"], function(events, options, util, board, models, HeartsClientBase, HeartsClientMiddleware, HeartsBotBase){
   const { Match, Game, Player, Deal, Cards, Card, PlayedCard, Hand, Pass, Round } = models;
   const match = new Match();
   const records = [];
@@ -365,9 +365,15 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
     },
     import (file) {
       const reader = new FileReader();
-      reader.onload = e => {
-        const data = JSON.parse(e.target.result);
-        const games = data.match.games.map(v => {
+      const parse = events => {
+        const bot = new HeartsBotBase();
+        const client = new HeartsClientBase({ bot });
+        const middleware = new HeartsClientMiddleware(client);
+        events.forEach(e => middleware.onMessage(e));
+        return middleware.detail.match.games.list;
+      };
+      const transfer = data => {
+        return data.match.games.map(v => {
           const game = new Game(v.number);
           game.deals.push(...v.deals.map(v => {
             const deal = new Deal(v.number);
@@ -398,6 +404,10 @@ define(["events", "options", "util", "board", "hears-models"], function(events, 
           }));
           return game;
         });
+      };
+      reader.onload = e => {
+        const data = JSON.parse(e.target.result);
+        const games = data.id ? parse(data.events) : transfer(data);
         records.push(...games);
         renderGameRecords();
       };

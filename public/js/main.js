@@ -68,6 +68,9 @@ function(game,    $,        jqueryui,   bootstrap,    domBinding,   layout,   co
     $('#import-logs-btn').on("change", function(e){
         e.target.files.length && logger.import(e.target.files[0]);
     });
+    $('#import-original-logs-btn').on("change", function(e){
+        e.target.files.length && logger.import(e.target.files[0]);
+    });
     $('#replay-round').on("click", function(e){
         logger.replay();
         game.replay();
