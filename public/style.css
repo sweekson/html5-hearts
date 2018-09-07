@@ -547,6 +547,9 @@ td[contentEditable]{
 	width: 30px;
 	height: 30px;
 	text-align: center;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	vertical-align: top;
 }
 
 .logs-item.selected {
