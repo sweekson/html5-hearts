@@ -46,11 +46,17 @@ define(function(){
     return numbers[data.num - 1] + suits[data.suit];
   }
 
+  function toUpperCamelCase (text) {
+    const pattern = /(([a-z]+)[\s_]*)/ig;
+    return text.replace(pattern, (m, s, w) => w.slice(0, 1).toUpperCase() + w.slice(1, s.length));
+  };
+
   return {
     $: $,
     vendorPrefix: vendorPrefix,
     search,
     enableAutoScroll,
     toCardValue,
+    string: { toUpperCamelCase },
   };
 });
