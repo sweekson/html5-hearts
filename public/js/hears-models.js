@@ -158,6 +158,10 @@ define(['Collection'], function (Collection) {
       return this.list.reduce((s, v) => s + v.score, 0);
     }
 
+    get strength () {
+      return this.list.reduce((total, card) => total + card.strength, 0);
+    }
+
     get penalties () {
       return this.list.filter(v => v.isPenal);
     }
@@ -307,6 +311,10 @@ define(['Collection'], function (Collection) {
       return Card.numbers[this.rank];
     }
 
+    get strength () {
+      return Card.strength[this.fullsuit][this.number - 2];
+    }
+
     get rank () {
       return this.value[0];
     }
@@ -331,6 +339,13 @@ define(['Collection'], function (Collection) {
   Card.numbers = {
     2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9,
     T: 10, J: 11, Q: 12, K: 13, A: 14
+  };
+
+  Card.strength = {
+    spades: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13, 14, 15],
+    hearts: [0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6],
+    diamonds: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4],
+    clubs: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3],
   };
 
   class PlayedCard extends Card {
