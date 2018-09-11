@@ -359,7 +359,7 @@ define(["events", "options", "util", "board", "hears-models", "HeartsClientBase"
       });
     },
     download () {
-      const data = JSON.stringify(games, null, 2);
+      const data = JSON.stringify(match.games, null, 2);
       const blob = new Blob([data], { type: 'application/json' });
       return URL.createObjectURL(blob);
     },
@@ -428,6 +428,5 @@ define(["events", "options", "util", "board", "hears-models", "HeartsClientBase"
     },
     get current () { return current; },
     get previous () { return previous; },
-    get games () { return games; },
   };
 });
