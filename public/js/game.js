@@ -171,7 +171,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                     heartBroken = false;
                     (rounds === 0 || options.replay() < rounds) && !replay && board.shuffleDeck();
                     initBrains().done(this.next.bind(this));
-                    events.trigger('round-prepare', { players });
+                    events.trigger('game-prepare', { players });
                 },
                 'distribute': function(){
                     var self = this;
@@ -179,7 +179,7 @@ function(ui,   Human,   Ai,   board,   config,   $,        rules,   RandomBrain,
                         players.forEach(function(p){
                             p.row.sort();
                         });
-                        events.trigger('round-distribute', { players });
+                        events.trigger('deal-distribute', { players });
                         self.next();
                     });
                 },
