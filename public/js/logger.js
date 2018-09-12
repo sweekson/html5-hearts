@@ -154,7 +154,7 @@ define(["events", "options", "util", "board", "hears-models", "HeartsClientBase"
 
     $table.append(
       $('<thead>').append($head),
-      $('<tbody>').append($spades, $hearts, $diamonds, $clubs),
+      $('<tbody>').append($spades, $hearts, $clubs, $diamonds),
     );
 
     hands.each(hand => {
