@@ -78,23 +78,49 @@ define(['Collection'], function (Collection) {
       return this;
     }
 
-    sort (ascending = true) {
+    sort (ascending = true, blend = false) {
       const l = this.length;
       const s = this.spades;
       const h = this.hearts;
       const d = this.diamonds;
       const c = this.clubs;
       const sorting = ascending ? (a, b) => a.number - b.number : (a, b) => b.number - a.number;
+
       if (s.length === l || h.length === l || d.length === l || c.length === l) {
         this.list.sort(sorting);
         return this;
       }
+
+      this.clear();
       s.sort(ascending);
       h.sort(ascending);
       d.sort(ascending);
       c.sort(ascending);
-      this.clear();
-      this.push(...s.list, ...h.list, ...c.list, ...d.list);
+
+      if (!blend) { return this.push(...s.list, ...h.list, ...c.list, ...d.list); }
+
+      for (let next; this.length !== l;) {
+        next = s.first || h.first || d.first || c.first;
+
+        if (ascending) {
+          s.first && s.first.number < next.number && (next = s.first);
+          h.first && h.first.number < next.number && (next = h.first);
+          d.first && d.first.number < next.number && (next = d.first);
+          c.first && c.first.number < next.number && (next = c.first);
+        } else {
+          s.first && s.first.number > next.number && (next = s.first);
+          h.first && h.first.number > next.number && (next = h.first);
+          d.first && d.first.number > next.number && (next = d.first);
+          c.first && c.first.number > next.number && (next = c.first);
+        }
+
+        next.isSpade && s.discard(next);
+        next.isHeart && h.discard(next);
+        next.isDiamond && d.discard(next);
+        next.isClub && c.discard(next);
+        this.push(next);
+      }
+
       return this;
     }
 
