@@ -370,7 +370,14 @@ define(["events", "options", "util", "board", "hears-models", "HeartsClientBase"
         const client = new HeartsClientBase({ bot });
         const middleware = new HeartsClientMiddleware(client);
         events.forEach(e => middleware.onMessage(e));
-        return middleware.detail.match.games.list;
+        return middleware.detail.match.games.list.map(game => {
+          game.deals.each(deal => {
+            deal.hands.each(v => {
+              v.pass && v.cards.discard(...v.pass.cards.values).push(...v.receive.cards.list).sort();
+            });
+          });
+          return game;
+        });
       };
       const transfer = data => {
         return data.match.games.map(v => {
