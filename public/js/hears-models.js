@@ -38,9 +38,10 @@ define(['Collection'], function (Collection) {
   }
 
   class Player {
-    constructor (number, name) {
+    constructor (number, name, position) {
       this.number = number;
       this.name = name;
+      this.position = position;
       this.score = 0;
       this.rank = 0;
       this.isHuman = false;
